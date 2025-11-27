@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<CONTRATOS>
+ <CONTRATO_100>
+                <DATOS_EMPRESA>
+                        <CIF_NIF_EMPRESA>
+                                <CIF_NIF>B55703185</CIF_NIF>
+                        </CIF_NIF_EMPRESA>
+                        <CODIGO_CUENTA_COTIZACION>016343115796849</CODIGO_CUENTA_COTIZACION>
+                </DATOS_EMPRESA>
+
+                <DATOS_TRABAJADOR>
+                        <IDENTIFICADORPFISICA>EY1751275T</IDENTIFICADORPFISICA>
+                        <NOMBRE_APELLIDOS>
+                                <NOMBRE>SHAKEEL</NOMBRE>
+                                <PRIMER_APELLIDO>AHMED</PRIMER_APELLIDO>
+                        </NOMBRE_APELLIDOS>
+                        <SEXO>1</SEXO>
+                        <FECHA_NACIMIENTO>19870527</FECHA_NACIMIENTO>
+                        <NACIONALIDAD>586</NACIONALIDAD>
+                        <MUNICIPIO_RESIDENCIA>43904</MUNICIPIO_RESIDENCIA>
+                        <PAIS_RESIDENCIA>724</PAIS_RESIDENCIA>
+                        <NUMERO_SEGURIDAD_SOCIAL>431035709407</NUMERO_SEGURIDAD_SOCIAL>
+                </DATOS_TRABAJADOR>
+
+                <DATOS_GENERALES_CONTRATO>
+                        <FECHA_INICIO>20251124</FECHA_INICIO>
+                        <NIVEL_FORMATIVO>22</NIVEL_FORMATIVO>
+                        <CODIGO_OCUPACION>9512    </CODIGO_OCUPACION>
+                        <NACIONALIDAD_CT>724</NACIONALIDAD_CT>
+                        <MUNICIPIO_CT>43904</MUNICIPIO_CT>
+                        <INDICATIVO_PRTR>N</INDICATIVO_PRTR>
+                </DATOS_GENERALES_CONTRATO>
+                <DATOS_PRESTACIONES>
+                        <IND_ERE>N</IND_ERE>
+                </DATOS_PRESTACIONES>
+                <DATOS_COMUNICA_COPIA_BASICA>
+                        <TIPO_FIRMA>2</TIPO_FIRMA>
+                        <TEXTO_COPIABASICA>
+- El objeto de la prestación laboral ser  el reflejado en el  contrato.  Así
+mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro
+de su grupo profesional como de otros similares.
+- La persona trabajadora  reconoce estar informada sobre las características
+del puesto de trabajo para el que se le contrata, así como haber recibido el
+material y las instrucciones precisas sobre  los  medios  de  prevención  de
+riesgos  laborales  y  la  formación  específica  inherentes  a  su  puesto,
+oblig ndose a su correcto uso y aplicación en el desempe¤o de sus funciones.
+Al mismo  tiempo  manifiesta  no  tener  limitación  alguna  tanto  a  nivel
+biológico, físico... para su desarrollo.
+- A los efectos previstos
+</TEXTO_COPIABASICA>
+                        <DOMIC_CENTRO_TRABAJO>CM DE LA CA BLANCA S/N, - (43896) L  ALDEA - TARRAGONA</DOMIC_CENTRO_TRABAJO>
+                </DATOS_COMUNICA_COPIA_BASICA>
+        </CONTRATO_100>
+         <CONTRATO_100>
+                <DATOS_EMPRESA>
+                        <CIF_NIF_EMPRESA>
+                                <CIF_NIF>B55703185</CIF_NIF>
+                        </CIF_NIF_EMPRESA>
+                        <CODIGO_CUENTA_COTIZACION>016343115796849</CODIGO_CUENTA_COTIZACION>
+                </DATOS_EMPRESA>
+
+                <DATOS_TRABAJADOR>
+                        <IDENTIFICADORPFISICA>EY1751275T</IDENTIFICADORPFISICA>
+                        <NOMBRE_APELLIDOS>
+                                <NOMBRE>SHAKEEL</NOMBRE>
+                                <PRIMER_APELLIDO>AHMED</PRIMER_APELLIDO>
+                        </NOMBRE_APELLIDOS>
+                        <SEXO>1</SEXO>
+                        <FECHA_NACIMIENTO></FECHA_NACIMIENTO>
+                        <NACIONALIDAD>586</NACIONALIDAD>
+                        <MUNICIPIO_RESIDENCIA>43904</MUNICIPIO_RESIDENCIA>
+                        <PAIS_RESIDENCIA>724</PAIS_RESIDENCIA>
+                        <NUMERO_SEGURIDAD_SOCIAL>431035709407</NUMERO_SEGURIDAD_SOCIAL>
+                </DATOS_TRABAJADOR>
+
+                <DATOS_GENERALES_CONTRATO>
+                        <FECHA_INICIO>20251124</FECHA_INICIO>
+                        <NIVEL_FORMATIVO>22</NIVEL_FORMATIVO>
+                        <CODIGO_OCUPACION>9512    </CODIGO_OCUPACION>
+                        <NACIONALIDAD_CT>724</NACIONALIDAD_CT>
+                        <MUNICIPIO_CT>43904</MUNICIPIO_CT>
+                        <INDICATIVO_PRTR>N</INDICATIVO_PRTR>
+                </DATOS_GENERALES_CONTRATO>
+                <DATOS_PRESTACIONES>
+                        <IND_ERE>N</IND_ERE>
+                </DATOS_PRESTACIONES>
+                <DATOS_COMUNICA_COPIA_BASICA>
+                        <TIPO_FIRMA>2</TIPO_FIRMA>
+                        <TEXTO_COPIABASICA>
+- El objeto de la prestación laboral ser  el reflejado en el  contrato.  Así
+mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro
+de su grupo profesional como de otros similares.
+- La persona trabajadora  reconoce estar informada sobre las características
+del puesto de trabajo para el que se le contrata, así como haber recibido el
+material y las instrucciones precisas sobre  los  medios  de  prevención  de
+riesgos  laborales  y  la  formación  específica  inherentes  a  su  puesto,
+oblig ndose a su correcto uso y aplicación en el desempe¤o de sus funciones.
+Al mismo  tiempo  manifiesta  no  tener  limitación  alguna  tanto  a  nivel
+biológico, físico... para su desarrollo.
+- A los efectos previstos
+</TEXTO_COPIABASICA>
+                        <DOMIC_CENTRO_TRABAJO>CM DE LA CA BLANCA S/N, - (43896) L  ALDEA - TARRAGONA</DOMIC_CENTRO_TRABAJO>
+                </DATOS_COMUNICA_COPIA_BASICA>
+        </CONTRATO_100>
+</CONTRATOS>

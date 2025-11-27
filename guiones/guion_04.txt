@@ -1,0 +1,23 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/contract-coeficiente
+[metodo]
+PUT
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037001/param_0004.txt
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+                "validar_sin_enviar": "true",
+                "regimen": "0111",
+                "ccc": "03141448363",
+                "dni": "23905114H",
+                "nss": "031104852782",
+                "startDate": "2024-06-24",
+                "contractType": "100",
+                "coeficiente": "200"
+        }
+}

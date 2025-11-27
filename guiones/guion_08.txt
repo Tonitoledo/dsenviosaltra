@@ -1,0 +1,22 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/duplicate-ta
+
+[parametro]
+
+[metodo]
+GET
+
+[fiche-out]
+/tmp/documentos/ase2111/apisbase/lanza/037000/param_0008.txt
+
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+            "EMPRESA_CCC": "011146146472731",
+            "nss": "123456789011",
+            "DESDE": "2025-01-01",
+            "movType": "ALTA"
+        }
+}

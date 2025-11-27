@@ -1,0 +1,67 @@
+# .gitignore para proyectos Python: archivos innecesarios y la carpeta certificados
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+wheels/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.env/
+.venv/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Logs, test & coverage
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter
+.ipynb_checkpoints
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+.env
+.env.*
+credentials.json
+secrets.json
+
+# Carpeta a ignorar según lo solicitado
+certificados/
+.history/

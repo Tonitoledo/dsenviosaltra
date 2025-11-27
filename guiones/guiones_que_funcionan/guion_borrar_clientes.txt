@@ -1,0 +1,9 @@
+[url]
+https://api.saltra.es/api/web/v3/customer
+[metodo]
+DELETE
+[parametro]
+13335
+[fiche-out]
+C:\aeat\certbase\lanza\037001\subircert.txt
+[json envio]

@@ -1,0 +1,21 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/employees-in-enterprise
+
+[parametro]
+
+[metodo]
+GET
+
+[fiche-out]
+/tmp/documentos/ase2111/apisbase/lanza/037000/param_0013.txt
+
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+            "regimen": "0111",
+            "ccc": "46146472731",
+            "options": "3"
+        }
+}

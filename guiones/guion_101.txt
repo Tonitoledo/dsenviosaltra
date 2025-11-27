@@ -1,0 +1,25 @@
+[url]
+https://api.saltra.es/api/v4/sepe/contrata
+
+[metodo]
+POST
+
+[parametro]
+
+[fiche-xml]
+/home/Ubuntu-Toni/programar/dsenviosaltra/CONTR402.xml
+[quita-lineas-xml]
+2
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037001/param_0101.txt
+
+[json envio]
+{
+	"certificado": "b39b0e5b259bb9a3935c9605973d463454d72d6b                    ",
+	"datos":
+	{
+		"validar_sin_enviar": "true",
+		"#xmltojson#" : "null"
+	}
+}

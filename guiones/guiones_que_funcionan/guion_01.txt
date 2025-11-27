@@ -1,0 +1,41 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/alta
+[metodo]
+POST
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/068002/param_0001.txt
+
+[json envio]
+{
+	"certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+	"datos":
+	{
+		"validar_sin_enviar": "false",
+		"regimen": "0111",
+		"ccc": "06005271108",
+		"nss": "061018619229",
+		"identificacion": "1",
+		"dni": "52359707T",
+		"fecha_real": "2025-11-18",
+		"grupo_cotizacion": "07",
+		"tipo_contrato": "410",
+		"cno": "4500",
+		"category_professional": "",
+		"rlce": "",
+		"worker_collective": "",
+		"ocupacion": "",
+		"convenio": "99012405011999",
+		"modalidad_ctz": "",
+		"fic": "",
+		"sust_cause": "",
+		"sust_nss": "",
+		"duplicate": "1",
+		"obtener_idc": "1",
+		"exc_ctz": "",
+		"cond_desempleado": "1",
+		"beneficios": "",
+		"cesion_tipo": ""
+	}
+}

@@ -1,0 +1,26 @@
+[url]
+https://api.saltra.es/api/web/v3/customer
+[metodo]
+POST
+[parametro]
+[fiche-out]
+C:\aeat\certbase\lanza\037001\subircert.txt
+[json envio]
+{
+  "name": "ADADE TARRAGONA, S.A.P.",
+  "access": {
+    "email": "geco32_ase2111@diagram.es",
+    "password": "D1agram.",
+    "password_confirmation": "D1agram."
+  },
+  "profile": {
+    "dni": "A81538472",
+    "razon_social": "ADADE TARRAGONA, S.A.P.",
+    "account": [
+      {
+        "regimen": "0111",
+        "cuenta": "08888888888",
+        "alias": "Prueba Cliente"
+      }]
+  }
+}

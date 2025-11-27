@@ -1,0 +1,11 @@
+[url]
+https://api.saltra.es/api/web/v3/customer/13375/activate
+[metodo]
+PUT
+[parametro]
+[fiche-out]
+C:\aeat\certbase\lanza\037002\desactivar_cliente.txt
+[json envio]
+{
+    "active": "true"
+}

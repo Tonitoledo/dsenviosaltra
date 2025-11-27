@@ -1,0 +1,18 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/nss-by-ipf
+[metodo]
+GET
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037000/param_0007.txt
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+                                "dni": "23905114H",
+                                "apellido1": "PULIDO",
+                                "apellido2": "OSTIO"
+        }
+}

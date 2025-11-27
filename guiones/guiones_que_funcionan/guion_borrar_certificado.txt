@@ -1,0 +1,16 @@
+[url]
+https://api.saltra.es/api/v4/certificate
+[metodo]
+DELETE
+[parametro]
+e3483b75548aa37cb5c0f40321591a964a417231
+[fiche-out]
+/tmp/ase2111/certbase/tmp/037001/bajacert.txt
+
+7ebf53eb5605ed9bc88df6e977fd2b4f1528dc4b
+6664458968ff7176ac3a12793f9405ff8fc08ada
+a949872e103f8dc31a53e428f1286f1ab169b8ec
+
+a1cb66666d287a62c5fe8cc0e8dc78cafced4c4f
+d328b86948a1faa7cc7e1c314faa198c6666d0ef
+342c761680fd7a5333c991ee174bec7f13467771

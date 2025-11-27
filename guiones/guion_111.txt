@@ -1,0 +1,22 @@
+[url]
+https://api.saltra.es/api/v4/sepe/contrata/data
+
+[metodo]
+GET
+
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037001/param_0111.txt
+
+[json envio]
+{
+	"certificado": "b39b0e5b259bb9a3935c9605973d463454d72d6b                    ",
+	"datos":
+	{
+		"validar_sin_enviar": "true",
+		"dni": "01234567A",
+		"ccc":"12345678901",
+		"startDate": "2025-01-01"
+	}
+}

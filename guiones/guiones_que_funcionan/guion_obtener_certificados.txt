@@ -1,0 +1,8 @@
+[url]
+https://api.saltra.es/api/v4/certificate
+[metodo]
+GET
+[parametro]
+
+[fiche-out]
+C:\aeat\certbase\lanza\037001\listacert.txt

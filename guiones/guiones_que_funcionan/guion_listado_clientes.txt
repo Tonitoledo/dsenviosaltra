@@ -1,0 +1,7 @@
+[url]
+https://api.saltra.es/api/web/v3/customer
+[metodo]
+GET
+[parametro]
+[fiche-out]
+C:\aeat\certbase\lanza\037002\listaclientes.txt
