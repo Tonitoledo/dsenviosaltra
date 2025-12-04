@@ -42,6 +42,16 @@ def extraer_y_guardar_respuesta(respuesta_data: Any, response: Any, fich_respues
         # Obtener datos una sola vez
         data = respuesta_data.get("data", {})
         file_info = data.get("file") if "file" in data else None
+
+        #   Obtener PDF llamamiento
+        if endpoint.endswith("/llamamientos"):
+            data = data.get("data", {})
+            for item in data:
+                if "file" in item:
+                    respuesta_data = item
+                    file_info = item.get("file")
+                    break
+        
         idc_pdf = data.get("idc") if "idc" in data else None
         total_pdfs = (1 if file_info else 0) + (1 if idc_pdf else 0)
 
@@ -72,7 +82,6 @@ def extraer_y_guardar_respuesta(respuesta_data: Any, response: Any, fich_respues
             
             # Generar archivo TXT con las rutas de los PDFs
             json_to_txt(respuesta_data, txt_path, response.status_code, config, usuario, endpoint, metodo, "", rutas_pdf)
-
         else:
             guardar_respuesta_sin_pdf(accion_deducida, respuesta_data, txt_path, response.status_code, config, usuario, endpoint, metodo)
 
@@ -364,7 +373,6 @@ def json_cliente_to_txt(json_data: str, txt_path: str, response_status: int, con
         return f"Error al escribir el archivo TXT en {txt_path}: {e}"
         
 def json_certificado_to_txt(json_data: str, txt_path: str, response_status: int, config: Dict[str, Any], usuario, endpoint, metodo):
-    """Convierte respuesta JSON de certificado a formato TXT"""
     status = "ok" if response_status == 200 else "error"
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     parametro = config.get("parametro", "")
@@ -427,12 +435,12 @@ def json_certificado_to_txt(json_data: str, txt_path: str, response_status: int,
         print(f"Error al escribir el archivo TXT en {txt_path}: {e}")
 
 def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dict[str, Any]=None, usuario=None, endpoint=None, metodo=None, mensaje_error=None, rutas_pdf=None):
-    """Convierte respuesta JSON genérica a formato TXT"""
     success = json_data.get("success", False)
     resultado = "ACEPTADO" if success else "RECHAZADO"
     lista = success and len(json_data.get("data", [])) > 0
     status = "ok" if response_status == 200 else "ko"
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    mensaje_error = json_data.get("errors", "") if mensaje_error is None else mensaje_error
     parametro = config.get("parametro", "")
 
     employees = 1
@@ -457,6 +465,9 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
     mensaje : {mensaje_error}\n"""
 
     if rutas_pdf:
+        if endpoint.endswith("/llamamientos"):
+            texto_salida_cuerpo += f"""
+        Mensaje {json_data.get("id")}"""
         for ruta in rutas_pdf:
             pdfs += 1
             texto_salida_cuerpo += f"""

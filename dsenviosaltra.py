@@ -305,7 +305,6 @@ class SaltraClient:
                     headers=headers,
                     json=llamada_json
                 )
-
                 guardar_respuesta_completa(response, self.fich_respuesta, "query_avanza",  self.config, self.usuario, self.endpoint, self.metodo, self.tiempo_inicio)
 
             else:
@@ -406,6 +405,7 @@ class SaltraClient:
         return path
 
     def xml_a_json(self, path_xml):
+        tiempo_parcial = [200,209,230,239,250,289,500,502,503,506,507,508,510,511,513,518,520,521,520,540,541,550,552]
         try:
             # Parsea el archivo XML
             tree = ET.parse(path_xml)
@@ -479,6 +479,11 @@ class SaltraClient:
                     texto_copia_basica = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/TEXTO_COPIABASICA')
                     workplace = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/DOMIC_CENTRO_TRABAJO')
 
+                    if cod_contrato in tiempo_parcial:
+                        tipo_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/TIPO_JORNADA')
+                        horas_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_JORNADA')
+                        minutos_jornada = 0
+
                     payload_api = {
                         #"test": 1,
                         "cif": cif_empresa,
@@ -528,6 +533,11 @@ class SaltraClient:
                     
                     if fecha_fin:
                         payload_api["endDate"] = fecha_fin
+
+                    if cod_contrato in tiempo_parcial:
+                        payload_api["jornadaType"] = tipo_jornada[2:]
+                        payload_api["jornadaHour"] = horas_jornada[2:]
+                        payload_api["jornadaMin"] = minutos_jornada
                     
                     json_dict.append(payload_api)
 
@@ -566,6 +576,7 @@ class SaltraClient:
                 nivel_formativo = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/NIVEL_FORMATIVO', '0'))
                 ocupacion = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/CODIGO_OCUPACION', '0'))
                 question = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/IND_INCORPORA_ACTIVIDAD')
+                sepeId = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/CLAVE_CONTRATO_TRANS')
 
                 payload_api = {
                     #"test": 1,
@@ -589,7 +600,8 @@ class SaltraClient:
                             "endDate": fecha_fin,
                             "nivelFormativo": nivel_formativo,
                             "question": question,
-                            "occupation": ocupacion
+                            "occupation": ocupacion,
+                            "sepeId": sepeId
                         }
                     ]
                 }

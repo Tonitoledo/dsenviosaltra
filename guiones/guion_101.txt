@@ -16,7 +16,7 @@ POST
 
 [json envio]
 {
-	"certificado": "b39b0e5b259bb9a3935c9605973d463454d72d6b                    ",
+	"certificado": "99ceeb28ce3c6be1a966b5d86568a0bf930e186b                    ",
 	"datos":
 	{
 		"validar_sin_enviar": "true",
