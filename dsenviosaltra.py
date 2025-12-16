@@ -5,6 +5,7 @@ Uso: python conectass_client.py archivo.xml [config.ini]
 """
 import os
 from pathlib import Path
+import re
 import sys
 import json
 import requests
@@ -442,6 +443,8 @@ class SaltraClient:
                     pais_residencia = int(self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/PAIS_RESIDENCIA', '0'))
 
                     nss = self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL')
+                    # Asegura que el NSS tenga 12 dígitos, rellenando con ceros a la izquierda si es necesario
+                    nss = nss.zfill(12)  
                     
                     nivel_formativo = int(self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/NIVEL_FORMATIVO', '0'))
                     ocupacion = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/CODIGO_OCUPACION')
@@ -565,24 +568,29 @@ class SaltraClient:
                 nacionalidad = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NACIONALIDAD', '0'))
                 municipio = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/MUNICIPIO_RESIDENCIA', '0'))
                 pais_residencia = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/PAIS_RESIDENCIA', '0'))
-                nss = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL', '0'))
+                nss = self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL')
+                # Asegura que el NSS tenga 12 dígitos, rellenando con ceros a la izquierda si es necesario
+                nss = nss.zfill(12)
 
                 fecha_ini_str = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_INICIO')
                 fecha_inicio = f"{fecha_ini_str[:4]}-{fecha_ini_str[4:6]}-{fecha_ini_str[6:8]}" if fecha_ini_str else None
 
                 fecha_fin_str = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_FIN')
-                fecha_fin = f"{fecha_ini_str[:4]}-{fecha_ini_str[4:6]}-{fecha_ini_str[6:8]}" if fecha_ini_str else None
+                fecha_fin = f"{fecha_fin_str[:4]}-{fecha_fin_str[4:6]}-{fecha_fin_str[6:8]}" if fecha_fin_str else None
                 
                 nivel_formativo = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/NIVEL_FORMATIVO', '0'))
                 ocupacion = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/CODIGO_OCUPACION', '0'))
                 question = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/IND_INCORPORA_ACTIVIDAD')
+
                 sepeId = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/CLAVE_CONTRATO_TRANS')
+                sepeId = self.tratar_sepeId(sepeId)
 
                 payload_api = {
                     #"test": 1,
                     "cif": cif_empresa,
                     "regimen": regimen_empresa,
                     "ccc": ccc_empresa,
+                    "duplicate": 1,
                     "employees": [
                         {
                             "doc": numero_documento,
@@ -614,6 +622,23 @@ class SaltraClient:
             print(f"Ha ocurrido un error al procesar el XML: {e}")
             return None
     
+    def tratar_sepeId(self, sepeId):
+        if not sepeId:
+            return ""
+        
+        sepeId = sepeId.strip()
+
+        if re.fullmatch(r"E-\d{2}-\d{4}-\d{7}", sepeId) or re.fullmatch(r"E-\d{2}-\d{4}-\d{6}", sepeId):
+            return sepeId
+        
+        
+        solo_numeros = re.sub(r"\D", "", sepeId)
+        
+        if not sepeId.startswith("E-"):
+            return f"E-{solo_numeros[0:2]}-{solo_numeros[2:6]}-{solo_numeros[6:]}"
+        else:
+            return ""
+
     def obtener_texto_nodo(self, nodo_padre, ruta, valor_defecto=""):
         """
         Busca un nodo hijo a partir de una ruta y devuelve su texto.
