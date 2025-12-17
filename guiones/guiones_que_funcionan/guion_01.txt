@@ -12,7 +12,7 @@ POST
 	"certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
 	"datos":
 	{
-		"validar_sin_enviar": "false",
+		"validar_sin_enviar": "true",
 		"regimen": "0111",
 		"ccc": "06005271108",
 		"nss": "061018619229",

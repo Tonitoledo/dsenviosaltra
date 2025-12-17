@@ -7,7 +7,7 @@ import json
 import requests
 import sys
 from typing import Dict, Any
-from dsenviosaltra_respuestas import guardar_respuesta_completa, crear_archivo_error,crear_archivo_fin
+from dsenviosaltra_respuestas import guardar_respuesta_completa, manejar_error_y_salir
 
 class DsEnvioSaltraCliente:
     def __init__(self, usuario, metodo, config: Dict[str, Any], fich_respuesta: str, token, tiempo_inicio):
@@ -23,9 +23,7 @@ class DsEnvioSaltraCliente:
             try:
                 data_dictionary = json.loads(self.config["json envio"])
             except json.JSONDecodeError as e:
-                crear_archivo_error(self.fich_respuesta, f"error : El 'json envio' proporcionado no es un JSON válido. {e}", self.tiempo_inicio)
-                crear_archivo_fin(self.fich_respuesta)
-                sys.exit(1)
+                manejar_error_y_salir(self.fich_respuesta, f"El 'json envio' proporcionado no es un JSON válido. {e}", self.usuario, "subir_cliente", self.tiempo_inicio)
             
             try:
                 headers = {
@@ -41,14 +39,10 @@ class DsEnvioSaltraCliente:
             except requests.exceptions.HTTPError as e:
                 data_error = json.loads(e.response.text)
                 mensaje_error = "error : {}".format(data_error["message"])
-                crear_archivo_error(self.fich_respuesta, mensaje_error, self.tiempo_inicio)
-                crear_archivo_fin(self.fich_respuesta)
-                sys.exit(1) 
+                manejar_error_y_salir(self.fich_respuesta, mensaje_error, self.usuario, "subir_cliente", self.tiempo_inicio)
                 
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, "subir_cliente", self.tiempo_inicio)
 
     def borrar_cliente(self, api_url):
         try: 
@@ -61,9 +55,7 @@ class DsEnvioSaltraCliente:
             response.raise_for_status()
             guardar_respuesta_completa(response, self.fich_respuesta, "cliente", self.config, self.usuario, api_url, "DELETE", self.tiempo_inicio)
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, "borrar_cliente", self.tiempo_inicio)
         
     def obtener_clientes(self, api_url):
         try:
@@ -79,9 +71,7 @@ class DsEnvioSaltraCliente:
             guardar_respuesta_completa(response, self.fich_respuesta, "cliente", self.config, self.usuario, api_url, "GET", self.tiempo_inicio)
 
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, "obtener_clientes", self.tiempo_inicio)
     
     def desactivar_cliente(self, api_url):
         try: 
@@ -89,9 +79,7 @@ class DsEnvioSaltraCliente:
                 data_dictionary = json.loads(self.config["json envio"])
                 datos_originales = data_dictionary.copy()
             except json.JSONDecodeError as e:
-                crear_archivo_error(self.fich_respuesta, f"error : El 'json envio' proporcionado no es un JSON válido. {e}", self.tiempo_inicio)
-                crear_archivo_fin(self.fich_respuesta)
-                sys.exit(1)
+                manejar_error_y_salir(self.fich_respuesta, f"El 'json envio' proporcionado no es un JSON válido. {e}", self.usuario, "desactivar_cliente", self.tiempo_inicio)
             
             if "active" in data_dictionary:
                 active = True if data_dictionary.get("active") == "true" or data_dictionary.get("active") == "True"  else False
@@ -112,11 +100,7 @@ class DsEnvioSaltraCliente:
             except requests.exceptions.HTTPError as e:
                 data_error = json.loads(e.response.text)
                 mensaje_error = "error : {}".format(data_error["message"])
-                crear_archivo_error(self.fich_respuesta, mensaje_error, self.tiempo_inicio)
-                crear_archivo_fin(self.fich_respuesta)
-                sys.exit(1) 
+                manejar_error_y_salir(self.fich_respuesta, mensaje_error, self.usuario, "desactivar_cliente", self.tiempo_inicio)
                 
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, "desactivar_cliente", self.tiempo_inicio)

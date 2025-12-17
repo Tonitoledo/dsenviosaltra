@@ -8,7 +8,7 @@ GET
 /tmp/ase2111/apisbase/lanza/037000/param_0082.txt
 [json envio]
 {
-        "certificado": "99ceeb28ce3c6be1a966b5d86568a0bf930e186b                    ",
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
         "datos":
         {
                 "regimen": "0111",

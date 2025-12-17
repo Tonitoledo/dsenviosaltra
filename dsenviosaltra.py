@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script cliente para API CONECTASS - Réplica exacta del sistema VB.NET
-Uso: python conectass_client.py archivo.xml [config.ini]
+Script cliente para API SALTRA
+Uso: python dsenviosaltra.py archivo.xml [config.ini]
 """
 import os
 from pathlib import Path
@@ -15,12 +15,18 @@ import xml.etree.ElementTree as ET
 from typing import Dict
 from dsenviosaltra_certificado import DsEnvioSaltraCertificado
 from dsenviosaltra_cliente import DsEnvioSaltraCliente
-from dsenviosaltra_respuestas import guardar_respuesta_completa, crear_archivo_fin, crear_archivo_error, json_to_txt, guardar_respuestas_contratos
+from dsenviosaltra_respuestas import guardar_respuesta_completa, manejar_error_y_salir, guardar_respuestas_contratos
 
 # Desactivar warning de SSL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class SaltraClient:
+    # Constantes para códigos de contrato
+    CONTRATOS_REAL_DECRETO = [402, 407, 502, 507]
+    CONTRATOS_HORAS_FORMACION = [421, 521]
+    TIEMPO_PARCIAL = [200, 209, 230, 239, 250, 289, 500, 502, 503, 506, 507, 508, 510, 511, 513, 518, 520, 521, 520, 540, 541, 550, 552]
+    COND_DESEMPLEADO_VALIDOS = ("1", "2", "3", "4", "5", "6", "7", "9")
+    
     def __init__(self, dsClave: str, usuario: str, idUsuario:str, passw: str, guion_file: str, code_respuesta: str, tiempo_inicio):
         self.dsClave = dsClave
         self.usuario = usuario
@@ -45,6 +51,20 @@ class SaltraClient:
 
         self.api_certificado = DsEnvioSaltraCertificado(self.usuario, self.idUsuario, self.metodo, self.endpoint, self.config, self.fich_respuesta, self.token, self.tiempo_inicio)
         self.api_cliente = DsEnvioSaltraCliente(self.usuario, self.metodo, self.config, self.fich_respuesta, self.token, self.tiempo_inicio)
+
+    def _validar_json(self, json_str: str, contexto: str = "") -> Dict:
+        """Valida y parsea un string JSON"""
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError as e:
+            mensaje = f"{contexto}El JSON proporcionado no es válido. {e}" if contexto else f"El JSON proporcionado no es válido. {e}"
+            manejar_error_y_salir(self.fich_respuesta, mensaje, self.usuario, self.endpoint, self.tiempo_inicio)
+
+    def _formatear_fecha(self, fecha_str: str) -> str:
+        """Formatea una fecha de formato YYYYMMDD a YYYY-MM-DD"""
+        if not fecha_str or len(fecha_str) < 8:
+            return None
+        return f"{fecha_str[:4]}-{fecha_str[4:6]}-{fecha_str[6:8]}"
 
     def deducir_accion_por_url(self):
         if not self.endpoint:
@@ -100,29 +120,13 @@ class SaltraClient:
                         os.makedirs(output_dir, exist_ok=True)
                 
                 if 'metodo' in config:
-                    try:
-                        self.metodo = config['metodo']
-                    except json.JSONDecodeError as e:
-                        crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-                        crear_archivo_fin(self.fich_respuesta)
-                        sys.exit(1)
+                    self.metodo = config['metodo']
                 
                 if 'url' in config:
-                    try:
-                        self.endpoint = config['url']
-                    except json.JSONDecodeError as e:
-                        crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-                        crear_archivo_fin(self.fich_respuesta)
-                        sys.exit(1)
+                    self.endpoint = config['url']
                 
                 if 'json envio' in config:
-                    try:
-                        json.loads(config['json envio'])
-
-                    except json.JSONDecodeError as e:
-                        crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-                        crear_archivo_fin(self.fich_respuesta)
-                        sys.exit(1)
+                    self._validar_json(config['json envio'], "El 'json envio' ")
                 
                 if 'fiche-xml' in config:
                     try:
@@ -135,9 +139,6 @@ class SaltraClient:
                         path_xml = self.obtener_path(config['fiche-xml'].strip())
                         json_data = self.xml_a_json(path_xml)
 
-                        if isinstance(json, str):
-                            json_data = json.loads(json_data)
-
                         if "#xmltojson#" in config['json envio']:
                             json_guion = config['json envio']
                             json_objecto = json.loads(json_guion)
@@ -148,51 +149,54 @@ class SaltraClient:
                             config['json envio'] = json.dumps(json_objecto)
 
                     except json.JSONDecodeError as e:
-                        crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-                        crear_archivo_fin(self.fich_respuesta)
-                        sys.exit(1)
-                
+                        manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
                     
             return config
 
         except Exception as e:
-            print(f"Error al leer {guion_file}: {e}")
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
     def acciones_cliente(self):
-        if self.metodo.upper() == 'POST':
-            return self.api_cliente.subir_cliente(self.endpoint)
-        elif self.metodo.upper() == 'GET':
-            return self.api_cliente.obtener_clientes(self.endpoint)
-        elif self.metodo.upper() == 'PUT':
-            return self.api_cliente.desactivar_cliente(self.endpoint)
-        elif self.metodo.upper() == 'DELETE':
-            self.endpoint = f"{self.endpoint}/{self.config['parametro']}"
-            return self.api_cliente.borrar_cliente(self.endpoint)
-        else:
-            crear_archivo_error(self.fich_respuesta, f"error : Método {self.metodo} no soportado para acción cliente.", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+        try:
+            acciones = {
+                'POST': lambda: self.api_cliente.subir_cliente(self.endpoint),
+                'GET': lambda: self.api_cliente.obtener_clientes(self.endpoint),
+                'PUT': lambda: self.api_cliente.desactivar_cliente(self.endpoint),
+                'DELETE': lambda: self._ejecutar_delete_cliente()
+            }
+            metodo = self.metodo.upper()
+            if metodo in acciones:
+                return acciones[metodo]()
+            else:
+                manejar_error_y_salir(self.fich_respuesta, f"Método {self.metodo} no soportado para acción cliente.", self.usuario, self.endpoint, self.tiempo_inicio)
+        except Exception as e:
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
+
+    def _ejecutar_delete_cliente(self):
+        self.endpoint = f"{self.endpoint}/{self.config['parametro']}"
+        return self.api_cliente.borrar_cliente(self.endpoint)
         
     def acciones_certificado(self):
         try:
-            if self.metodo.upper() == 'POST':
-                return self.api_certificado.subir_certificado()
-            elif self.metodo.upper() == 'GET':
-                return self.api_certificado.obtener_certificados()
-            elif self.metodo.upper() == 'DELETE':
-                self.endpoint = f"{self.endpoint}/{self.config['parametro']}"
-                return self.api_certificado.borrar_certificado(self.endpoint)
+            acciones = {
+                'POST': lambda: self.api_certificado.subir_certificado(),
+                'GET': lambda: self.api_certificado.obtener_certificados(),
+                'DELETE': lambda: self._ejecutar_delete()
+            }
+            
+            metodo = self.metodo.upper()
+            
+            if metodo in acciones:
+                return acciones[metodo]()
             else:
-                
-                crear_archivo_error(self.fich_respuesta, f"error : Método {self.metodo} no soportado para acción certificado.", self.tiempo_inicio)
-                crear_archivo_fin(self.fich_respuesta)
-                sys.exit(1)   
+                manejar_error_y_salir(self.fich_respuesta, f"error: Método {metodo} no soportado para acción certificado.", self.usuario, self.endpoint, self.tiempo_inicio)        
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1) 
-        
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
+    
+    def _ejecutar_delete(self):
+        self.endpoint = f"{self.endpoint}/{self.config['parametro']}"
+        return self.api_certificado.borrar_certificado(self.endpoint)
+
     def realizar_llamada_ss_sepe(self) -> str:
         data_json = ""
         try:
@@ -207,9 +211,7 @@ class SaltraClient:
                     data_json = json.loads(data_json)
                     
                 except json.JSONDecodeError as e:
-                    crear_archivo_error(self.fich_respuesta, f"error : El campo 'datos' contiene un string que no es un JSON válido. {e}", self.tiempo_inicio)
-                    crear_archivo_fin(self.fich_respuesta)
-                    sys.exit(1)
+                    manejar_error_y_salir(self.fich_respuesta, f"El campo 'datos' contiene un string que no es un JSON válido. {e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
             datos_originales = data_json.copy()
 
@@ -223,7 +225,7 @@ class SaltraClient:
 
             if "cond_desempleado" in data_json:
                 data_cond_desempleado = data_json.get("cond_desempleado")
-                if data_cond_desempleado != "" and data_cond_desempleado in ("1", "2", "3", "4", "5", "6", "7", "9"):
+                if data_cond_desempleado != "" and data_cond_desempleado in self.COND_DESEMPLEADO_VALIDOS:
                     cond_desempleado = int(data_cond_desempleado)
                     datos_originales.pop("cond_desempleado")
                     datos_originales["cond_desempleado"] = cond_desempleado
@@ -241,9 +243,7 @@ class SaltraClient:
                 datos_originales["obtener_idc"] = obtener_idc
         
         except json.JSONDecodeError as e:
-            crear_archivo_error(self.fich_respuesta, f"error : El 'json envio' proporcionado no es un JSON válido. {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"El 'json envio' proporcionado no es un JSON válido. {e}", self.usuario, self.endpoint, self.tiempo_inicio)
         
         headers = {
             'Content-Type': 'application/json',
@@ -326,26 +326,25 @@ class SaltraClient:
                 e.response.reason,
                 data_error["message"]
             )
-            base_path = Path(self.fich_respuesta)
-            txt_path = str(base_path.with_suffix('.txt'))
-            respuesta_data = response.json()
-            json_to_txt(respuesta_data, txt_path,"ko",self.config, self.usuario, self.endpoint, self.metodo, error_message, "")
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            
+            manejar_error_y_salir(self.fich_respuesta, error_message, self.usuario, self.endpoint, self.tiempo_inicio)
+
+            #base_path = Path(self.fich_respuesta)
+            #txt_path = str(base_path.with_suffix('.txt'))
+            #respuesta_data = response.json()
+            #json_to_txt(respuesta_data, txt_path,"ko",self.config, self.usuario, self.endpoint, self.metodo, error_message, "")
+            #crear_archivo_fin(self.fich_respuesta)
+            #sys.exit(1)
 
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
     def obtener_copia_basica(self, test, contrato, headers, response):
         
         try:
             response_data = response.json()
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
         copia_basica_json ={}
         if test == 1:
@@ -372,8 +371,7 @@ class SaltraClient:
             dict1 = json.loads(response.text)
             dict2 = json.loads(reponse_copia_basica.text)
         except json.JSONDecodeError as e:
-            print(f"Error al decodificar JSON: {e}")
-            exit()
+            manejar_error_y_salir(self.fich_respuesta, f"Error al decodificar JSON: {e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
         if reponse_copia_basica.status_code == 200:
             # Verificar que ambas respuestas tengan success=true y la estructura de datos correcta
@@ -406,7 +404,6 @@ class SaltraClient:
         return path
 
     def xml_a_json(self, path_xml):
-        tiempo_parcial = [200,209,230,239,250,289,500,502,503,506,507,508,510,511,513,518,520,521,520,540,541,550,552]
         try:
             # Parsea el archivo XML
             tree = ET.parse(path_xml)
@@ -435,8 +432,7 @@ class SaltraClient:
                     apellido2 = self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/NOMBRE_APELLIDOS/SEGUNDO_APELLIDO')
                     sexo = int(self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/SEXO', '0'))
 
-                    fecha_nac_str = self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/FECHA_NACIMIENTO')
-                    fecha_nacimiento = f"{fecha_nac_str[:4]}-{fecha_nac_str[4:6]}-{fecha_nac_str[6:8]}" if fecha_nac_str else None
+                    fecha_nacimiento = self._formatear_fecha(self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/FECHA_NACIMIENTO'))
                     
                     nacionalidad = int(self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/NACIONALIDAD', '0'))
                     municipio = int(self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/MUNICIPIO_RESIDENCIA', '0'))
@@ -444,7 +440,10 @@ class SaltraClient:
 
                     nss = self.obtener_texto_nodo(contrato_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL')
                     # Asegura que el NSS tenga 12 dígitos, rellenando con ceros a la izquierda si es necesario
-                    nss = nss.zfill(12)  
+                    if nss:
+                        nss = nss.zfill(12)
+                    else:
+                        nss = 0 
                     
                     nivel_formativo = int(self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/NIVEL_FORMATIVO', '0'))
                     ocupacion = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/CODIGO_OCUPACION')
@@ -452,13 +451,12 @@ class SaltraClient:
                     municipio_contrato = int(self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/MUNICIPIO_CT', '0'))
                     
                     real_decreto_1435_1985 = ""
-                    if cod_contrato in [402, 407, 502, 507]:
+                    if cod_contrato in self.CONTRATOS_REAL_DECRETO:
                         real_decreto_1435_1985 = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/REAL_DECRETO_1435_1985')
 
                     collectiveAgreement = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/IND_CONVENIO_COLECTIVO')
 
-                    fecha_ini_str = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/FECHA_INICIO')
-                    fecha_inicio = f"{fecha_ini_str[:4]}-{fecha_ini_str[4:6]}-{fecha_ini_str[6:8]}" if fecha_ini_str else None
+                    fecha_inicio = self._formatear_fecha(self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/FECHA_INICIO'))
                     
                     indicativo_prtr = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/INDICATIVO_PRTR')
                     causa_sustitucion_str = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_SUSTITUCION/CAUSA_SUSTITUCION')
@@ -468,27 +466,25 @@ class SaltraClient:
                     minutos_formacion = 0
                     indicador_ere = None
 
-                    if cod_contrato in [421, 521]:
+                    if cod_contrato in self.CONTRATOS_HORAS_FORMACION:
                         horas_formacion_str = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_FORMACION', '0')
                         horas_formacion = int(horas_formacion_str)
                         minutos_formacion = 1
                         
                     # IND_ERE no existe en el XML, asumimos "N" (No)
                     indicador_ere = self.obtener_texto_nodo(contrato_node, 'DATOS_PRESTACIONES/IND_ERE', 'N')
-                    fecha_fin_str = self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/FECHA_TERMINO')
-                    fecha_fin = f"{fecha_fin_str[:4]}-{fecha_fin_str[4:6]}-{fecha_fin_str[6:8]}" if fecha_fin_str else None
+                    fecha_fin = self._formatear_fecha(self.obtener_texto_nodo(contrato_node, 'DATOS_GENERALES_CONTRATO/FECHA_TERMINO'))
 
                     tipo_firma = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/TIPO_FIRMA')
                     texto_copia_basica = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/TEXTO_COPIABASICA')
                     workplace = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/DOMIC_CENTRO_TRABAJO')
 
-                    if cod_contrato in tiempo_parcial:
+                    if cod_contrato in self.TIEMPO_PARCIAL:
                         tipo_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/TIPO_JORNADA')
                         horas_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_JORNADA')
                         minutos_jornada = 0
 
                     payload_api = {
-                        #"test": 1,
                         "cif": cif_empresa,
                         "regimen": regimen_empresa,
                         "ccc": ccc_empresa,
@@ -537,7 +533,7 @@ class SaltraClient:
                     if fecha_fin:
                         payload_api["endDate"] = fecha_fin
 
-                    if cod_contrato in tiempo_parcial:
+                    if cod_contrato in self.TIEMPO_PARCIAL:
                         payload_api["jornadaType"] = tipo_jornada[2:]
                         payload_api["jornadaHour"] = horas_jornada[2:]
                         payload_api["jornadaMin"] = minutos_jornada
@@ -562,21 +558,20 @@ class SaltraClient:
                 apellido2 = self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NOMBRE_APELLIDOS/SEGUNDO_APELLIDO')
                 sexo = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/SEXO', '0'))
 
-                fecha_nac_str = self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/FECHA_NACIMIENTO')
-                fecha_nacimiento = f"{fecha_nac_str[:4]}-{fecha_nac_str[4:6]}-{fecha_nac_str[6:8]}" if fecha_nac_str else None
+                fecha_nacimiento = self._formatear_fecha(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/FECHA_NACIMIENTO'))
                 
                 nacionalidad = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NACIONALIDAD', '0'))
                 municipio = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/MUNICIPIO_RESIDENCIA', '0'))
                 pais_residencia = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/PAIS_RESIDENCIA', '0'))
-                nss = self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL')
-                # Asegura que el NSS tenga 12 dígitos, rellenando con ceros a la izquierda si es necesario
-                nss = nss.zfill(12)
+                nss = self.obtener_texto_nodo(llamamiento_node, 'DATOS_TRABAJADOR/NUMERO_SEGURIDAD_SOCIAL', '0')
+                if nss:
+                    nss = nss.zfill(12)
+                else:
+                    nss = 0                
 
-                fecha_ini_str = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_INICIO')
-                fecha_inicio = f"{fecha_ini_str[:4]}-{fecha_ini_str[4:6]}-{fecha_ini_str[6:8]}" if fecha_ini_str else None
+                fecha_inicio = self._formatear_fecha(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_INICIO'))
 
-                fecha_fin_str = self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_FIN')
-                fecha_fin = f"{fecha_fin_str[:4]}-{fecha_fin_str[4:6]}-{fecha_fin_str[6:8]}" if fecha_fin_str else None
+                fecha_fin = self._formatear_fecha(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/FECHA_FIN'))
                 
                 nivel_formativo = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/NIVEL_FORMATIVO', '0'))
                 ocupacion = int(self.obtener_texto_nodo(llamamiento_node, 'DATOS_LLAMAMIENTO/CODIGO_OCUPACION', '0'))
@@ -586,7 +581,6 @@ class SaltraClient:
                 sepeId = self.tratar_sepeId(sepeId)
 
                 payload_api = {
-                    #"test": 1,
                     "cif": cif_empresa,
                     "regimen": regimen_empresa,
                     "ccc": ccc_empresa,
@@ -664,9 +658,7 @@ class SaltraClient:
 
             return response_data.get('data', {}).get('access_token')
         except Exception as e:
-            crear_archivo_error(self.fich_respuesta, f"error : {e}", self.tiempo_inicio)
-            crear_archivo_fin(self.fich_respuesta)
-            sys.exit(1)
+            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
 def main():
     start_time = time.time()

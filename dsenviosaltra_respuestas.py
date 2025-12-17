@@ -56,10 +56,8 @@ def extraer_y_guardar_respuesta(respuesta_data: Any, response: Any, fich_respues
         total_pdfs = (1 if file_info else 0) + (1 if idc_pdf else 0)
 
     except Exception as e:
-        crear_archivo_error(fich_respuesta, f"error : {e}", tiempo_inicio)
-        crear_archivo_fin(fich_respuesta)
-        sys.exit(1)
-    
+        manejar_error_y_salir(fich_respuesta, f"{e}", usuario, endpoint, tiempo_inicio)
+
     txt_path = str(base_path.with_suffix('.txt'))
     _crear_directorio(os.path.dirname(txt_path))
     try:
@@ -86,9 +84,7 @@ def extraer_y_guardar_respuesta(respuesta_data: Any, response: Any, fich_respues
             guardar_respuesta_sin_pdf(accion_deducida, respuesta_data, txt_path, response.status_code, config, usuario, endpoint, metodo)
 
     except Exception as e:
-        crear_archivo_error(fich_respuesta, f"error : {e}", tiempo_inicio)
-        crear_archivo_fin(fich_respuesta)
-        sys.exit(1)
+        manejar_error_y_salir(fich_respuesta, f"{e}", usuario, endpoint, tiempo_inicio)
     
 def guardar_respuesta_sin_pdf(accion_deducida, respuesta_data, txt_path, status_code, config, usuario, endpoint, metodo):
     if accion_deducida == 'certificado':
@@ -110,7 +106,7 @@ def _procesar_pdf_contrato(data: Dict, base_path: Path, numero_contrato: int, ca
     return None
 
 def guardar_respuestas_contratos(respuestas_contratos: List[Dict], fich_respuesta: str, config: Dict[str, Any], usuario: str, endpoint: str, metodo: str, tiempo_inicio):
-    """Guarda todas las respuestas de contratos en un Ãºnico archivo TXT con mÃºltiples registros"""
+    """Guarda todas las respuestas de contratos en un Ãºnico archivo TXT con múltiples registros"""
     try:
         if not fich_respuesta:
             return
@@ -202,9 +198,7 @@ def guardar_respuestas_contratos(respuestas_contratos: List[Dict], fich_respuest
         
     except Exception as e:
         print(f"Error guardando respuestas de contratos: {e}")
-        crear_archivo_error(fich_respuesta, f"error : {e}", tiempo_inicio)
-        crear_archivo_fin(fich_respuesta)
-        sys.exit(1)
+        manejar_error_y_salir(fich_respuesta, f"{e}", usuario, endpoint, tiempo_inicio)
 
 def extraer_pdf(respuesta: Any) -> Any:
     if not isinstance(respuesta, dict):
@@ -248,6 +242,12 @@ def guardar_pdf(pdf_data: Any, ruta_pdf: str):
     except Exception as e:
         print(f"Error inesperado al guardar el PDF: {e}")
 
+def manejar_error_y_salir(fich_respuesta, mensaje_error, usuario, endpoint, tiempo_inicio):
+        """Helper para manejar errores de forma consistente"""
+        crear_archivo_error(fich_respuesta, mensaje_error, usuario, endpoint, tiempo_inicio)
+        crear_archivo_fin(fich_respuesta)
+        sys.exit(1)
+
 def crear_archivo_fin(fich_respuesta: str):
     if not fich_respuesta:
         return
@@ -262,13 +262,24 @@ def crear_archivo_fin(fich_respuesta: str):
     except Exception as e:
         print(f"Error creando archivo FIN: {e}")
 
-def crear_archivo_error(fich_respuesta: str, resultado: str, tiempo_inicio):
+def crear_archivo_error(fich_respuesta: str, resultado: str, usuario, endpoint, tiempo_inicio):
     """Crea archivo de error con información del fallo"""
     try:
         _crear_directorio(os.path.dirname(fich_respuesta))
 
         total_time = round(time.time() - tiempo_inicio)
-        contenido = f"  STATUS ko\n{resultado}\nTiempo transcurrido: {total_time} segundos"
+        fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        contenido = f"""PETICION
+  FECHA {fecha_actual}
+  USUARIO {usuario}
+  URL {endpoint}
+  STATUS ko
+  
+  OPERACIONES SS/SEPE/CERTIFICA
+      Errores
+        mensaje : {resultado}
+FIN
+Tiempo transcurrido: {total_time} segundos"""
         
         with open(fich_respuesta, 'w', encoding='utf-8') as f:
             f.write(contenido)
@@ -366,6 +377,7 @@ def json_cliente_to_txt(json_data: str, txt_path: str, response_status: int, con
         return f"Error: Método {metodo} no soportado para acción cliente."
     
     texto_salida = texto_salida_encabezado + texto_salida_cuerpo + "\n\nFIN" if texto_salida_cuerpo else texto_salida_encabezado + "\n\nFIN" 
+    
     try:
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(texto_salida)
@@ -440,7 +452,7 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
     lista = success and len(json_data.get("data", [])) > 0
     status = "ok" if response_status == 200 else "ko"
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    mensaje_error = json_data.get("errors", "") if mensaje_error is None else mensaje_error
+    mensaje_error = json_data.get("errors", json_data.get("message", mensaje_error))
     parametro = config.get("parametro", "")
 
     employees = 1
