@@ -119,6 +119,9 @@ class SaltraClient:
                     if output_dir and not os.path.exists(output_dir):
                         os.makedirs(output_dir, exist_ok=True)
                 
+                if 'parametro' in config:
+                    self.parametro = config['parametro']
+                    
                 if 'metodo' in config:
                     self.metodo = config['metodo']
                 
@@ -257,41 +260,52 @@ class SaltraClient:
         try:
             if self.endpoint.rstrip('/').endswith('/contrata'):
                 
-                test = datos_originales.get('test')
-                json_string = datos_originales["json_data"]
-                contratos_a_procesar = json.loads(json_string)
-                respuestas_contratos = []
-                for i, contrato in enumerate(contratos_a_procesar):
-                    if test == 1:
-                        contrato["test"] = test
-                        
+                if self.metodo == 'DELETE':
                     response = requests.request(
                         method=self.metodo,
                         url=self.endpoint,
                         headers=headers,
-                        json=contrato
+                        json=datos_originales
                     )
-
                     if response.status_code == 200:
-                        response = self.obtener_copia_basica(test, contrato, headers, response)
-                    else:
-                        response = response.json()
-                        
-                    # Acumular las respuestas en una lista
-                    respuestas_contratos.append({
-                        'response': response,
-                        'numero': i + 1
-                    })
+                        print("Contrato eliminado correctamente.")
+                    #guardar_respuesta_completa(response, self.fich_respuesta, "query_avanza",  self.config, self.usuario, self.endpoint, self.metodo, self.tiempo_inicio)
+                else:
+                    test = datos_originales.get('test')
+                    json_string = datos_originales["json_data"]
+                    contratos_a_procesar = json.loads(json_string)
+                    respuestas_contratos = []
+                    for i, contrato in enumerate(contratos_a_procesar):
+                        if test == 1:
+                            contrato["test"] = test
+                            
+                        response = requests.request(
+                            method=self.metodo,
+                            url=self.endpoint,
+                            headers=headers,
+                            json=contrato
+                        )
 
-                guardar_respuestas_contratos(
-                    respuestas_contratos,
-                    self.fich_respuesta,
-                    self.config,
-                    self.usuario,
-                    self.endpoint,
-                    self.metodo,
-                    self.tiempo_inicio
-                )
+                        if response.status_code == 200:
+                            response = self.obtener_copia_basica(test, contrato, headers, response)
+                        else:
+                            response = response.json()
+                            
+                        # Acumular las respuestas en una lista
+                        respuestas_contratos.append({
+                            'response': response,
+                            'numero': i + 1
+                        })
+
+                    guardar_respuestas_contratos(
+                        respuestas_contratos,
+                        self.fich_respuesta,
+                        self.config,
+                        self.usuario,
+                        self.endpoint,
+                        self.metodo,
+                        self.tiempo_inicio
+                    )
             elif self.endpoint.rstrip('/').endswith('/llamamientos'):
                 test = datos_originales.get('test')
                 json_string = datos_originales["json_data"]
@@ -329,39 +343,22 @@ class SaltraClient:
             
             manejar_error_y_salir(self.fich_respuesta, error_message, self.usuario, self.endpoint, self.tiempo_inicio)
 
-            #base_path = Path(self.fich_respuesta)
-            #txt_path = str(base_path.with_suffix('.txt'))
-            #respuesta_data = response.json()
-            #json_to_txt(respuesta_data, txt_path,"ko",self.config, self.usuario, self.endpoint, self.metodo, error_message, "")
-            #crear_archivo_fin(self.fich_respuesta)
-            #sys.exit(1)
-
         except Exception as e:
             manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
 
-    def obtener_copia_basica(self, test, contrato, headers, response):
-        
-        try:
-            response_data = response.json()
-        except Exception as e:
-            manejar_error_y_salir(self.fich_respuesta, f"{e}", self.usuario, self.endpoint, self.tiempo_inicio)
+    def obtener_copia_basica(self, test, contrato, headers, response):      
 
         copia_basica_json ={}
         if test == 1:
             copia_basica_json["test"] = test
         
+        
         copia_basica_json["cif"] = contrato.get("cif", "")
-        copia_basica_json["docType"] = contrato.get("docType", "")
         copia_basica_json["dni"] = contrato.get("dni", "")
-        copia_basica_json["sepeId"] = response_data.get("data", {}).get("id", "")
-        copia_basica_json["TIPO_FIRMA"] = contrato.get("signatureType", "")
         copia_basica_json["startDate"] = contrato.get("startDate", "")
-        copia_basica_json["TEXTO_COPIABASICA"] = contrato.get("copyBasicText", "")
-        copia_basica_json["DOMIC_CENTRO_TRABAJO"] = contrato.get("workplace", "")
-        copia_basica_json["duplicate"] = 1
 
         reponse_copia_basica = requests.request(
-            method="POST",
+            method="GET",
             url = "https://api.saltra.es/api/v4/sepe/copy-basic",
             headers=headers,
             json=copia_basica_json
@@ -385,8 +382,6 @@ class SaltraClient:
                 dict1['data']['file2'] = segundo_fichero
                 return dict1
             else:
-                # Si alguna respuesta falló (success=false) o no tiene la estructura esperada,
-                # devolver la respuesta de copia básica que contiene el error
                 return dict2
         else:
             return dict2
@@ -405,7 +400,7 @@ class SaltraClient:
 
     def xml_a_json(self, path_xml):
         try:
-            # Parsea el archivo XML
+            # Parsea el archivo XML 
             tree = ET.parse(path_xml)
             root = tree.getroot()
             payload_api = {}
@@ -477,6 +472,8 @@ class SaltraClient:
 
                     tipo_firma = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/TIPO_FIRMA')
                     texto_copia_basica = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/TEXTO_COPIABASICA')
+                    texto_copia_basica = self.normalizar_texto(texto_copia_basica)                   
+
                     workplace = self.obtener_texto_nodo(contrato_node, 'DATOS_COMUNICA_COPIA_BASICA/DOMIC_CENTRO_TRABAJO')
 
                     if cod_contrato in self.TIEMPO_PARCIAL:
@@ -506,10 +503,11 @@ class SaltraClient:
                         "codContract": cod_contrato,
                         "startDate": fecha_inicio,
                         "INDICATIVO_PRTR": indicativo_prtr,
-                        "signatureType": tipo_firma,
-                        "copyBasicText": texto_copia_basica,
-                        "workplace": workplace,
-                        "copia": 1,
+                        "copyBasic": {
+                            "TIPO_FIRMA": tipo_firma,
+                            "TEXTO_COPIABASICA": texto_copia_basica,
+                            "DOMIC_CENTRO_TRABAJO": workplace
+                        },
                         "duplicate": 1
                     }
                     if real_decreto_1435_1985 and real_decreto_1435_1985 != "":
@@ -643,6 +641,21 @@ class SaltraClient:
         if nodo_hijo is not None and nodo_hijo.text:
             return nodo_hijo.text.strip()
         return valor_defecto
+
+    def normalizar_texto(self, texto: str) -> str:
+        if not texto:
+            return ""
+
+        try:
+            bytes_texto = texto.encode('iso-8859-1')
+            texto = bytes_texto.decode('utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            pass
+
+        texto = re.sub(r'\s+', ' ', texto)
+
+        # Quita espacios al inicio y final
+        return texto.strip()
 
     def obtener_token(self):
         try:

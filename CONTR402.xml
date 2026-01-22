@@ -3,146 +3,55 @@
         <CONTRATO_100>
                 <DATOS_EMPRESA>
                         <CIF_NIF_EMPRESA>
-                                <CIF_NIF>B55703185</CIF_NIF>
+                                <CIF_NIF>B53200598</CIF_NIF>
                         </CIF_NIF_EMPRESA>
-                        <CODIGO_CUENTA_COTIZACION>016343115796849</CODIGO_CUENTA_COTIZACION>
+                        <CODIGO_CUENTA_COTIZACION>011125107963784</CODIGO_CUENTA_COTIZACION>
                 </DATOS_EMPRESA>
 
                 <DATOS_TRABAJADOR>
-                        <IDENTIFICADORPFISICA>EY1751275T</IDENTIFICADORPFISICA>
+                        <IDENTIFICADORPFISICA>D78103452Y</IDENTIFICADORPFISICA>
                         <NOMBRE_APELLIDOS>
-                                <NOMBRE>SHAKEEL</NOMBRE>
-                                <PRIMER_APELLIDO>AHMED</PRIMER_APELLIDO>
+                                <NOMBRE>XAVIER</NOMBRE>
+                                <PRIMER_APELLIDO>CONSTANTI</PRIMER_APELLIDO>
+                                <SEGUNDO_APELLIDO>AGUSTI</SEGUNDO_APELLIDO>
                         </NOMBRE_APELLIDOS>
                         <SEXO>1</SEXO>
-                        <FECHA_NACIMIENTO>19870527</FECHA_NACIMIENTO>
-                        <NACIONALIDAD>586</NACIONALIDAD>
-                        <MUNICIPIO_RESIDENCIA>43904</MUNICIPIO_RESIDENCIA>
-                        <PAIS_RESIDENCIA>724</PAIS_RESIDENCIA>
-                        <NUMERO_SEGURIDAD_SOCIAL>431035709407</NUMERO_SEGURIDAD_SOCIAL>
-                </DATOS_TRABAJADOR>
-
-                <DATOS_GENERALES_CONTRATO>
-                        <FECHA_INICIO>20251124</FECHA_INICIO>
-                        <NIVEL_FORMATIVO>22</NIVEL_FORMATIVO>
-                        <CODIGO_OCUPACION>9512    </CODIGO_OCUPACION>
-                        <NACIONALIDAD_CT>724</NACIONALIDAD_CT>
-                        <MUNICIPIO_CT>43904</MUNICIPIO_CT>
-                        <INDICATIVO_PRTR>N</INDICATIVO_PRTR>
-                </DATOS_GENERALES_CONTRATO>
-                <DATOS_PRESTACIONES>
-                        <IND_ERE>N</IND_ERE>
-                </DATOS_PRESTACIONES>
-                <DATOS_COMUNICA_COPIA_BASICA>
-                        <TIPO_FIRMA>2</TIPO_FIRMA>
-                        <TEXTO_COPIABASICA>
-- El objeto de la prestación laboral ser  el reflejado en el  contrato.  Así
-mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro
-de su grupo profesional como de otros similares.
-- La persona trabajadora  reconoce estar informada sobre las características
-del puesto de trabajo para el que se le contrata, así como haber recibido el
-material y las instrucciones precisas sobre  los  medios  de  prevención  de
-riesgos  laborales  y  la  formación  específica  inherentes  a  su  puesto,
-oblig ndose a su correcto uso y aplicación en el desempe¤o de sus funciones.
-Al mismo  tiempo  manifiesta  no  tener  limitación  alguna  tanto  a  nivel
-biológico, físico... para su desarrollo.
-- A los efectos previstos
-                        </TEXTO_COPIABASICA>
-                        <DOMIC_CENTRO_TRABAJO>CM DE LA CA BLANCA S/N, - (43896) L  ALDEA - TARRAGONA</DOMIC_CENTRO_TRABAJO>
-                </DATOS_COMUNICA_COPIA_BASICA>
-        </CONTRATO_100>
-        <CONTRATO_100>
-                <DATOS_EMPRESA>
-                        <CIF_NIF_EMPRESA>
-                                <CIF_NIF>B55703185</CIF_NIF>
-                        </CIF_NIF_EMPRESA>
-                        <CODIGO_CUENTA_COTIZACION>016343115796849</CODIGO_CUENTA_COTIZACION>
-                </DATOS_EMPRESA>
-
-                <DATOS_TRABAJADOR>
-                        <IDENTIFICADORPFISICA>EY1751275T</IDENTIFICADORPFISICA>
-                        <NOMBRE_APELLIDOS>
-                                <NOMBRE>SHAKEEL</NOMBRE>
-                                <PRIMER_APELLIDO>AHMED</PRIMER_APELLIDO>
-                        </NOMBRE_APELLIDOS>
-                        <SEXO>1</SEXO>
-                        <FECHA_NACIMIENTO></FECHA_NACIMIENTO>
-                        <NACIONALIDAD>586</NACIONALIDAD>
-                        <MUNICIPIO_RESIDENCIA>43904</MUNICIPIO_RESIDENCIA>
-                        <PAIS_RESIDENCIA>724</PAIS_RESIDENCIA>
-                        <NUMERO_SEGURIDAD_SOCIAL>431035709407</NUMERO_SEGURIDAD_SOCIAL>
-                </DATOS_TRABAJADOR>
-
-                <DATOS_GENERALES_CONTRATO>
-                        <FECHA_INICIO>20251124</FECHA_INICIO>
-                        <NIVEL_FORMATIVO>22</NIVEL_FORMATIVO>
-                        <CODIGO_OCUPACION>9512    </CODIGO_OCUPACION>
-                        <NACIONALIDAD_CT>724</NACIONALIDAD_CT>
-                        <MUNICIPIO_CT>43904</MUNICIPIO_CT>
-                        <INDICATIVO_PRTR>N</INDICATIVO_PRTR>
-                </DATOS_GENERALES_CONTRATO>
-                <DATOS_PRESTACIONES>
-                        <IND_ERE>N</IND_ERE>
-                </DATOS_PRESTACIONES>
-                <DATOS_COMUNICA_COPIA_BASICA>
-                        <TIPO_FIRMA>2</TIPO_FIRMA>
-                        <TEXTO_COPIABASICA>
-- El objeto de la prestación laboral ser  el reflejado en el  contrato.  Así
-mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro
-de su grupo profesional como de otros similares.
-- La persona trabajadora  reconoce estar informada sobre las características
-del puesto de trabajo para el que se le contrata, así como haber recibido el
-material y las instrucciones precisas sobre  los  medios  de  prevención  de
-riesgos  laborales  y  la  formación  específica  inherentes  a  su  puesto,
-oblig ndose a su correcto uso y aplicación en el desempe¤o de sus funciones.
-Al mismo  tiempo  manifiesta  no  tener  limitación  alguna  tanto  a  nivel
-biológico, físico... para su desarrollo.
-- A los efectos previstos
-                        </TEXTO_COPIABASICA>
-                        <DOMIC_CENTRO_TRABAJO>CM DE LA CA BLANCA S/N, - (43896) L  ALDEA - TARRAGONA</DOMIC_CENTRO_TRABAJO>
-                </DATOS_COMUNICA_COPIA_BASICA>
-        </CONTRATO_100>
-        <CONTRATO_200>
-                <DATOS_EMPRESA>
-                        <CIF_NIF_EMPRESA>
-                                <CIF_NIF>A81538472</CIF_NIF>
-                        </CIF_NIF_EMPRESA>
-                        <CODIGO_CUENTA_COTIZACION>011143102951625</CODIGO_CUENTA_COTIZACION>
-                </DATOS_EMPRESA>
-                <DATOS_TRABAJADOR>
-                        <IDENTIFICADORPFISICA>D48156352X</IDENTIFICADORPFISICA>
-                        <NOMBRE_APELLIDOS>
-                                <NOMBRE>Rosa María</NOMBRE>
-                                <PRIMER_APELLIDO>Sanabria</PRIMER_APELLIDO>
-                                <SEGUNDO_APELLIDO>Cepeda</SEGUNDO_APELLIDO>
-                        </NOMBRE_APELLIDOS>
-                        <SEXO>1</SEXO>
-                        <FECHA_NACIMIENTO>20040522</FECHA_NACIMIENTO>
+                        <FECHA_NACIMIENTO>20041020</FECHA_NACIMIENTO>
                         <NACIONALIDAD>724</NACIONALIDAD>
-                        <MUNICIPIO_RESIDENCIA>02003</MUNICIPIO_RESIDENCIA>
+                        <MUNICIPIO_RESIDENCIA>25040</MUNICIPIO_RESIDENCIA>
                         <PAIS_RESIDENCIA>724</PAIS_RESIDENCIA>
-                        <NUMERO_SEGURIDAD_SOCIAL>021017754175</NUMERO_SEGURIDAD_SOCIAL>
+                        <NUMERO_SEGURIDAD_SOCIAL>251036205013</NUMERO_SEGURIDAD_SOCIAL>
                 </DATOS_TRABAJADOR>
+
                 <DATOS_GENERALES_CONTRATO>
-                        <FECHA_INICIO>20220905</FECHA_INICIO>
-                        <NIVEL_FORMATIVO>12</NIVEL_FORMATIVO>
-                        <CODIGO_OCUPACION>4500 </CODIGO_OCUPACION>
+                        <FECHA_INICIO>20260107</FECHA_INICIO>
+                        <NIVEL_FORMATIVO>23</NIVEL_FORMATIVO>
+                        <CODIGO_OCUPACION>4500    </CODIGO_OCUPACION>
                         <NACIONALIDAD_CT>724</NACIONALIDAD_CT>
-                        <MUNICIPIO_CT>43014</MUNICIPIO_CT>
+                        <MUNICIPIO_CT>25120</MUNICIPIO_CT>
                         <INDICATIVO_PRTR>N</INDICATIVO_PRTR>
                 </DATOS_GENERALES_CONTRATO>
-                <DATOS_CONTRATO_TIEMPO_PARCIAL>
-                        <TIPO_JORNADA>S</TIPO_JORNADA>
-                        <HORAS_JORNADA>003000</HORAS_JORNADA>
-                        <HORAS_CONVENIO>004000</HORAS_CONVENIO>
-                </DATOS_CONTRATO_TIEMPO_PARCIAL>
+                <DATOS_PRESTACIONES>
+                        <IND_ERE>N</IND_ERE>
+                </DATOS_PRESTACIONES>
                 <DATOS_COMUNICA_COPIA_BASICA>
                         <TIPO_FIRMA>2</TIPO_FIRMA>
-                        <TEXTO_COPIABASICA> - El objeto de la prestación laboral ser  el reflejado en el contrato. Así mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro de su grupo profesional como de otros similares. - La persona trabajadora reconoce estar informada sobre las características del puesto de trabajo para el que se le contrata, así como haber recibido el material y las instrucciones precisas sobre los medios de prevención de riesgos laborales y la formación específica inherentes a su puesto, oblig ndose a su correcto uso y aplicación en el desempe¤o de sus funciones. Al mismo tiempo manifiesta no tener limitación alguna tanto a nivel biológico, físico... para su desarrollo. - A los efectos previstos </TEXTO_COPIABASICA>
-                        <DOMIC_CENTRO_TRABAJO>CL LARACHE, 10, - (43870) AMPOSTA - TARRAGONA</DOMIC_CENTRO_TRABAJO>
+                        <TEXTO_COPIABASICA>
+- Durante la vigencia del presente contrato  la jornada ordinaria de trabajo
+en cómputo anual no podr  superar las 1530.13 horas (art.15.1 C.Col.).
+- El objeto de la prestación laboral ser  el reflejado en el  contrato.  Así
+mismo la persona trabajadora acepta la polivalencia funcional, tanto dentro
+de su grupo profesional como de otros similares.
+- La persona trabajadora  reconoce estar informada sobre las características
+del puesto de trabajo para el que se le contrata, así como haber recibido el
+material y las instrucciones precisas sobre  los  medios  de  prevención  de
+riesgos  laborales  y  la  formación  específica  inherentes  a  su  puesto,
+oblig ndose a su correcto uso y aplicación en el desempeño de sus funcio
+</TEXTO_COPIABASICA>
+                        <DOMIC_CENTRO_TRABAJO>PS. DE RONDA 60, - (25006) LLEIDA - LLEIDA</DOMIC_CENTRO_TRABAJO>
                 </DATOS_COMUNICA_COPIA_BASICA>
                 <DATOS_USOLIBRE_EMPRESA>
-                        <USOLIBRE_EMPRESA>48156352X</USOLIBRE_EMPRESA>
+                        <USOLIBRE_EMPRESA>78103452Y</USOLIBRE_EMPRESA>
                 </DATOS_USOLIBRE_EMPRESA>
-        </CONTRATO_200>
+        </CONTRATO_100>
 </CONTRATOS>

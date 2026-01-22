@@ -152,25 +152,16 @@ def guardar_respuestas_contratos(respuestas_contratos: List[Dict], fich_respuest
 """
                 texto_salida +=f"""
       Errores
-        mensaje : {mensaje} {error}\n"""
+        error : {mensaje} {error}\n"""
             else:
-                # Guardar el JSON de respuesta individual
-                #json_path = base_path.parent / f"{base_path.stem}_CONTRATO{numero_contrato}.json"
-                #
-                #content_type = response.headers.get('content-type', '')
-                #if 'application/json' in content_type:
-                #    with open(json_path, 'w', encoding='utf-8') as f:
-                #        json.dump(respuesta_data, f, indent=2, ensure_ascii=False) 
-
                 data = response_dict.get("data", {})
                 mensaje = data.get("id", "") if "id" in data else ""
                 dni_trabajador = data.get("doc", "") if "doc" in data else ""
 
                 texto_salida += f"""
-        mensaje {mensaje}
+        Mensaje {mensaje}
         DNITRABA : {dni_trabajador}"""
                 
-                # Procesar los PDF en 'file'
                 ruta_pdf1 = _procesar_pdf_contrato(data, base_path, numero_contrato, "file1", 1)
                 if ruta_pdf1:
                     texto_salida += f"""
@@ -435,7 +426,7 @@ def json_certificado_to_txt(json_data: str, txt_path: str, response_status: int,
             
             
     elif metodo.upper() == 'DELETE':
-        pass  # No hay datos específicos para mostrar
+        pass
     else:
         return f"Error: Método {metodo} no soportado para acción certificado."
     
@@ -514,12 +505,29 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
             employees += 1
             
         else:
+            acciones = ["018", "019", "021"]
             texto_salida_cuerpo +=f"""
           Tabla"""
-            for registro in json_data.get("data"):
-                texto_salida_cuerpo +=f"""
-            {registro} : {json_data.get("data").get(registro)}"""
-            employees += 1
+            if parametro in acciones:
+                if parametro == "018":
+                    for registro in json_data.get("data").get("grupoCotizacion"):
+                        texto_salida_cuerpo +=f"""
+                {registro} : {json_data.get("data").get("grupoCotizacion").get(registro)}"""
+                    
+                elif parametro == "019":
+                    for registro in json_data.get("data").get("ocupacion"):
+                        texto_salida_cuerpo +=f"""
+                {registro} : {json_data.get("data").get("ocupacion").get(registro)}"""
+
+                elif parametro == "021":
+                    for registro in json_data.get("data").get("categoriaProfesional"):
+                        texto_salida_cuerpo +=f"""
+                {registro} : {json_data.get("data").get("categoriaProfesional").get(registro)}"""
+            else:
+                for registro in json_data.get("data"):
+                    texto_salida_cuerpo +=f"""
+                {registro} : {json_data.get("data").get(registro)}"""
+                employees += 1
     
     
 
