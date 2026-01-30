@@ -1,0 +1,20 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/cno
+[metodo]
+GET
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037000/param_0023.txt
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+                "validar_sin_enviar": "true",
+                "regimen": "0111",
+                "ccc": "28206877853",
+                "dni": "16657217L",
+                "nss": "281634850969"
+        }
+}

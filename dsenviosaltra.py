@@ -306,13 +306,16 @@ class SaltraClient:
                         self.metodo,
                         self.tiempo_inicio
                     )
-            elif self.endpoint.rstrip('/').endswith('/llamamientos'):
+            elif self.endpoint.rstrip('/').endswith('/llamamientos') or self.endpoint.rstrip('/').endswith('/prorroga') or self.endpoint.rstrip('/').endswith('/certifica') or self.endpoint.rstrip('/').endswith('/contrata/data'):
                 test = datos_originales.get('test')
-                json_string = datos_originales["json_data"]
-                llamada_json = json.loads(json_string)
+                if "json_data" in datos_originales:
+                    json_string = datos_originales["json_data"]
+                    llamada_json = json.loads(json_string)
 
-                if test == 1:
-                    llamada_json["test"] = test
+                    if test == 1:
+                        llamada_json["test"] = test
+                else:
+                    llamada_json = datos_originales
                     
                 response = requests.request(
                     method=self.metodo,
@@ -405,8 +408,20 @@ class SaltraClient:
             root = tree.getroot()
             payload_api = {}
             esContrato = False
+            esLlamamiento = False
+            esProrroga = False
+            esCertificado = False
             if root.tag == "CONTRATOS":
                 esContrato = True
+
+            if root.tag == "LLAMAMIENTOS":
+                esLlamamiento = True
+
+            if root.tag == "PRORROGAS":
+                esProrroga = True
+
+            if root.tag == "Certificado_empresa":
+                esCertificado = True
             
             if esContrato:
                 json_dict = []
@@ -539,7 +554,36 @@ class SaltraClient:
                     json_dict.append(payload_api)
 
                 return json.dumps(json_dict)
-            else:
+            elif esProrroga:
+                prorroga_node = root.find('PRORROGA_TIPO')
+                cif_empresa = self.obtener_texto_nodo(prorroga_node, 'DATOS_EMPRESA/CIF_NIF_EMPRESA/CIF_NIF')
+                ccc_completo = self.obtener_texto_nodo(prorroga_node, 'DATOS_EMPRESA/CCC')
+                
+                regimen_empresa = ccc_completo[:4]
+                ccc_empresa = ccc_completo[4:]
+
+                dni = self.obtener_texto_nodo(prorroga_node, 'DATOS_USOLIBRE_EMPRESA/USOLIBRE_EMPRESA')
+
+                fecha_inicio_cto = self._formatear_fecha(self.obtener_texto_nodo(prorroga_node, 'DATOS_GENERALES_PRORROGA/FECHA_INICIO_CTO'))
+                fecha_inicio = self._formatear_fecha(self.obtener_texto_nodo(prorroga_node, 'DATOS_GENERALES_PRORROGA/FECHA_INICIO'))
+                fecha_fin = self._formatear_fecha(self.obtener_texto_nodo(prorroga_node, 'DATOS_GENERALES_PRORROGA/FECHA_FIN'))
+
+                convenio_colectivo = self.obtener_texto_nodo(prorroga_node, 'DATOS_GENERALES_PRORROGA/INDICADOR_CONV_COL')
+                
+                payload_api = {
+                    "cif": cif_empresa,
+                    "regimen": regimen_empresa,
+                    "ccc": ccc_empresa,
+                    "dni": dni,
+                    "old_startDate": fecha_inicio_cto,
+                    "startDate": fecha_inicio,
+                    "endDate": fecha_fin,
+                    "prorroga_exist_convenio": convenio_colectivo,
+                    "duplicate": 1
+                }
+                
+                return json.dumps(payload_api)
+            elif esLlamamiento:
                 llamamiento_node = root.find('LLAMAMIENTO_TIPO')
                 cif_empresa = self.obtener_texto_nodo(llamamiento_node, 'DATOS_EMPRESA/CIF_NIF_EMPRESA/CIF_NIF')
                 ccc_completo = self.obtener_texto_nodo(llamamiento_node, 'DATOS_EMPRESA/CCC')
@@ -606,7 +650,101 @@ class SaltraClient:
                     ]
                 }
                 return json.dumps(payload_api)
+            elif esCertificado:
+                cerificado_node = root.find("Cuenta_cotizacion")
+
+                representante_node = cerificado_node.find("Datos_Representante")
+                # Datos Representante
+                representante = {}
+                if representante_node is not None:
+                    representante = {
+                        "CIF_NIF": self.obtener_texto_nodo(representante_node, 'CIF_NIF'),
+                        "Nombre": self.obtener_texto_nodo(representante_node, 'Nombre'),
+                        "Apellido1": self.obtener_texto_nodo(representante_node, 'Apellido1'),
+                        "Apellido2": self.obtener_texto_nodo(representante_node, 'Apellido2'),
+                        "Cargo": self.obtener_texto_nodo(representante_node, 'Cargo')
+                    }
+                
+                # Datos Empresa
+                empresa_node = cerificado_node.find('Datos_Empresa')
+                empresa = {}
+                if empresa_node is not None:
+                    empresa = {
+                        "CIF_NIF": self.obtener_texto_nodo(empresa_node, 'CIF_NIF'),
+                        "CCC": self.obtener_texto_nodo(empresa_node, 'CCC')
+                    }
+                
+                # Datos Trabajador
+                trabajador_node = cerificado_node.find('Datos_Trabajador')
+                trabajador = {}
+                
+                if trabajador_node is not None:
+                    # Datos básicos del trabajador
+                    trabajador = {
+                        "DNI_NIE": self.obtener_texto_nodo(trabajador_node, 'DNI_NIE'),
+                        "Nombre": self.obtener_texto_nodo(trabajador_node, 'Nombre'),
+                        "Apellido1": self.obtener_texto_nodo(trabajador_node, 'Apellido1'),
+                        "Apellido2": self.obtener_texto_nodo(trabajador_node, 'Apellido2'),
+                        "NumSS": self.obtener_texto_nodo(trabajador_node, 'NumSS'),
+                        "GrupoCotizacion": self.obtener_texto_nodo(trabajador_node, 'GrupoCotizacion'),
+                        "TipoContrato": self.obtener_texto_nodo(trabajador_node, 'TipoContrato'),
+                        "DuracionContrato": self.obtener_texto_nodo(trabajador_node, 'DuracionContrato'),
+                        "IndicadorDuracionContrato": self.obtener_texto_nodo(trabajador_node, 'IndicadorDuracionContrato'),
+                        "CodProfesion": self.obtener_texto_nodo(trabajador_node, 'CodProfesion'),
+                        "FechaAltaEmpresa": self._formatear_fecha(self.obtener_texto_nodo(trabajador_node, 'FechaAltaEmpresa')),
+                        "CodCausaSuspension": self.obtener_texto_nodo(trabajador_node, 'CodCausaSuspension'),
+                        "FechaSuspensionExtincion": self._formatear_fecha(self.obtener_texto_nodo(trabajador_node, 'FechaSuspensionExtincion')),
+                        "DiasSalarioTramitacion": self.obtener_texto_nodo(trabajador_node, 'DiasSalarioTramitacion')
+                    }
+
+                distribucion_node = trabajador_node.find('DistribucionJornadas')
+                if distribucion_node is not None:
+                    periodos = []
+                    for periodo_node in distribucion_node.findall('Periodo'):
+                        periodo = {
+                            "TipoDistribucion": self.obtener_texto_nodo(periodo_node, 'TipoDistribucion'),
+                            "FechaInicioPeriodo": self._formatear_fecha(self.obtener_texto_nodo(periodo_node, 'FechaInicioPeriodo')),
+                            "FechaFinPeriodo": self._formatear_fecha(self.obtener_texto_nodo(periodo_node, 'FechaFinPeriodo')),
+                            "NumeroDiasTrabajadosPorSemanaOPeriodo": self.obtener_texto_nodo(periodo_node, 'NumeroDiasTrabajadosPorSemanaOPeriodo')
+                        }
+                        periodos.append(periodo)
                     
+                    trabajador["DistribucionJornadas"] = {
+                        "Periodo": periodos[0] if len(periodos) == 1 else periodos
+                    }
+
+                # Datos Cotización (múltiples)
+                datos_cotizacion_list = []
+                for cotizacion_node in trabajador_node.findall('Datos_Cotizacion'):
+                    cotizacion = {
+                        "Ano": self.obtener_texto_nodo(cotizacion_node, 'Ano'),
+                        "Mes": self.obtener_texto_nodo(cotizacion_node, 'Mes'),
+                        "NumDiasCotizados": self.obtener_texto_nodo(cotizacion_node, 'NumDiasCotizados'),
+                        "BaseCotizacionDesempleo": self.obtener_texto_nodo(cotizacion_node, 'BaseCotizacionDesempleo')
+                    }
+                    datos_cotizacion_list.append(cotizacion)
+                
+                if datos_cotizacion_list:
+                    trabajador["Datos_Cotizacion"] = datos_cotizacion_list
+                
+                payload_api = {
+                    "Datos_Representante": representante,
+                    "Datos_Empresa": empresa,
+                    "Datos_Trabajador": trabajador
+                }
+
+                return json.dumps(payload_api)
+            else:
+                tipo_documento = self.obtener_texto_nodo(root, 'TIPODOC')
+                ccc = self.obtener_texto_nodo(root, 'CCC')
+                dni = self.obtener_texto_nodo(root, 'NIF_NIE')
+                fecha_inicio = self._formatear_fecha(self.obtener_texto_nodo(root, 'FECHA_ALTA'))
+                payload_api = {
+                    "dni": dni,
+                    "ccc": ccc,
+                    "startDate": fecha_inicio
+                }
+                return json.dumps(payload_api)
         except FileNotFoundError:
             print(f"Error: El archivo '{path_xml}' no fue encontrado.")
             return None

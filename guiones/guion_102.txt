@@ -1,0 +1,25 @@
+[url]
+https://api.saltra.es/api/v4/sepe/prorroga
+
+[metodo]
+POST
+
+[parametro]
+
+[fiche-xml]
+/home/Ubuntu-Toni/programar/dsenviosaltra/prorroga.xml
+[quita-lineas-xml]
+2
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037001/param_0102.txt
+
+[json envio]
+{
+	"certificado": "91dde74b184b34ab6cc5098fa570c3d9a649385f                    ",
+	"datos":
+	{
+		"validar_sin_enviar": "true",
+		"#xmltojson#" : "null"
+	}
+}

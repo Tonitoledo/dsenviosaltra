@@ -267,8 +267,10 @@ def crear_archivo_error(fich_respuesta: str, resultado: str, usuario, endpoint, 
   STATUS ko
   
   OPERACIONES SS/SEPE/CERTIFICA
-      Errores
-        mensaje : {resultado}
+      Registro-1
+        Resultado RECHAZADO
+  Errores
+    mensaje : {resultado}
 FIN
 Tiempo transcurrido: {total_time} segundos"""
         
@@ -440,8 +442,10 @@ def json_certificado_to_txt(json_data: str, txt_path: str, response_status: int,
 def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dict[str, Any]=None, usuario=None, endpoint=None, metodo=None, mensaje_error=None, rutas_pdf=None):
     success = json_data.get("success", False)
     resultado = "ACEPTADO" if success else "RECHAZADO"
-    lista = success and len(json_data.get("data", [])) > 0
-    status = "ok" if response_status == 200 else "ko"
+    status = "ok" if response_status == 200 or response_status == 428 else "ko"
+    if response_status == 428:
+        success = True
+        
     fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     mensaje_error = json_data.get("errors", json_data.get("message", mensaje_error))
     parametro = config.get("parametro", "")
@@ -460,7 +464,6 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
         Resultado {resultado}"""
     
     texto_salida_cuerpo = ""
-    cuerpo_pdf = ""
 
     if status == "ko":
         texto_salida_cuerpo +=f"""
@@ -479,58 +482,87 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
         texto_salida_cuerpo += """
       FinRegistro
 """
-        lista = False
-    
-    if lista:
-        texto_salida_cuerpo +=f"""
+    data = json_data.get("data")
+
+    if data:
+        # data es una lista
+        if isinstance(data, list):
+            texto_salida_cuerpo += f"""
         Extra
           facturable : {employees}"""
-        if "employees" in json_data.get("data"):
-            for employee in json_data.get("data").get("employees"):
-                texto_salida_cuerpo +=f"""
-          Tabla"""
-                for clave, valor in employee.items():
-                    texto_salida_cuerpo +=f"""
-            {clave} : {valor}"""
-            employees += 1
-
-        # Comprueba si "data" es una lista de diccionarios 
-        elif (isinstance(json_data.get("data"), list)):
-            for registro in json_data.get("data"):
-                texto_salida_cuerpo +=f"""
+            for registro in data:
+                texto_salida_cuerpo += f"""
           Tabla"""
                 for clave, valor in registro.items():
-                    texto_salida_cuerpo +=f"""
+                    texto_salida_cuerpo += f"""
             {clave} : {valor}"""
-            employees += 1
-            
-        else:
-            acciones = ["018", "019", "021"]
-            texto_salida_cuerpo +=f"""
-          Tabla"""
-            if parametro in acciones:
-                if parametro == "018":
-                    for registro in json_data.get("data").get("grupoCotizacion"):
-                        texto_salida_cuerpo +=f"""
-                {registro} : {json_data.get("data").get("grupoCotizacion").get(registro)}"""
-                    
-                elif parametro == "019":
-                    for registro in json_data.get("data").get("ocupacion"):
-                        texto_salida_cuerpo +=f"""
-                {registro} : {json_data.get("data").get("ocupacion").get(registro)}"""
+                employees += 1
 
-                elif parametro == "021":
-                    for registro in json_data.get("data").get("categoriaProfesional"):
-                        texto_salida_cuerpo +=f"""
-                {registro} : {json_data.get("data").get("categoriaProfesional").get(registro)}"""
+        # data es un diccionario
+        elif isinstance(data, dict):
+            texto_salida_cuerpo += f"""
+        Extra
+          facturable : {employees}"""
+            # tiene clave 'employees'
+            if "employees" in data:
+                for employee in data.get("employees"):
+                    texto_salida_cuerpo += f"""
+          Tabla"""
+                    for clave, valor in employee.items():
+                        texto_salida_cuerpo += f"""
+            {clave} : {valor}"""
+                    employees += 1
+            
+            # tiene clave 'list'
+            elif "list" in data:
+                for item in data.get("list"):
+                    texto_salida_cuerpo += f"""
+          Tabla"""
+                    for clave, valor in item.items():
+                        texto_salida_cuerpo += f"""
+            {clave} : {valor}"""
+                    employees += 1
+            
+            # acciones específicas (018, 019, 021)
+            elif parametro in ["018", "019", "021"]:
+                texto_salida_cuerpo += f"""
+          Tabla"""
+                if parametro == "018" and "grupoCotizacion" in data:
+                    if data.get("grupoCotizacion"):
+                        for registro, valor in data.get("grupoCotizacion").items():
+                            texto_salida_cuerpo += f"""
+                {registro} : {valor}"""
+                    else:
+                        texto_salida_cuerpo += f"""
+                grupoCotizacion : Ninguna"""
+
+                elif parametro == "019" and "ocupacion" in data:
+                    if data.get("ocupacion"):
+                        for registro, valor in data.get("ocupacion").items():
+                            texto_salida_cuerpo += f"""
+                {registro} : {valor}"""
+                    else:
+                        texto_salida_cuerpo += f"""
+                ocupacion : Ninguna"""
+
+                elif parametro == "021" and "categoriaProfesional" in data:
+                    if data.get("categoriaProfesional"):
+                        for registro, valor in data.get("categoriaProfesional").items():
+                            texto_salida_cuerpo += f"""
+                {registro} : {valor}"""
+                    else:
+                        texto_salida_cuerpo += f"""
+                categoriaProfesional : Ninguna"""
+            
+            # data es un diccionario simple
             else:
-                for registro in json_data.get("data"):
-                    texto_salida_cuerpo +=f"""
-                {registro} : {json_data.get("data").get(registro)}"""
+                texto_salida_cuerpo += f"""
+          Tabla"""
+                for registro, valor in data.items():
+                    texto_salida_cuerpo += f"""
+                {registro} : {valor}"""
                 employees += 1
     
-    
-
     texto_salida = texto_salida_encabezado + "\n\nFIN" if texto_salida_cuerpo == "" else texto_salida_encabezado + texto_salida_cuerpo + "\n\nFIN" 
     try:
         with open(txt_path, "w", encoding="utf-8") as f:

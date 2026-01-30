@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<PRORROGAS>
+                <PRORROGA_TIPO>
+                        <DATOS_EMPRESA>
+                        <CIF_NIF_EMPRESA>
+                                <CIF_NIF>B53200598</CIF_NIF>
+                        </CIF_NIF_EMPRESA>
+                                <CCC>011103130277401</CCC>
+                        </DATOS_EMPRESA>
+                        <DATOS_CONTRATO>
+                        <CLAVE_CONTRATO>E0320200342374</CLAVE_CONTRATO>
+                        </DATOS_CONTRATO>
+                        <DATOS_GENERALES_PRORROGA>
+                                <FECHA_INICIO_CTO>20201005</FECHA_INICIO_CTO>
+                                <FECHA_INICIO>20201201</FECHA_INICIO>
+                                <FECHA_FIN>20210531</FECHA_FIN>
+                                <INDICADOR_CONV_COL>S</INDICADOR_CONV_COL>
+                        </DATOS_GENERALES_PRORROGA>
+                        <NUMPRORROGA>01</NUMPRORROGA>
+                        <DATOS_ADICIONALES_PRORROGA>
+                                <HORAS_FORMACION>000000</HORAS_FORMACION>
+                        </DATOS_ADICIONALES_PRORROGA>
+                        <DATOS_USOLIBRE_EMPRESA>
+                                <USOLIBRE_EMPRESA>48357175C</USOLIBRE_EMPRESA>
+                        </DATOS_USOLIBRE_EMPRESA>
+                </PRORROGA_TIPO>
+</PRORROGAS>

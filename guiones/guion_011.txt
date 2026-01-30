@@ -1,0 +1,23 @@
+[url]
+https://api.saltra.es/api/v4/seg-social/employee-situations
+
+[parametro]
+
+[metodo]
+GET
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037000/param_011.txt
+
+[json envio]
+{
+        "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
+        "datos":
+        {
+            "regimen": "0111",
+            "ccc": "12345678901",
+            "dni": "12345678B",
+            "startDate": "2023-01-01",
+            "getConvenio": "1"
+        }
+}
