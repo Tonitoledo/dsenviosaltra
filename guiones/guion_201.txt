@@ -7,7 +7,7 @@ POST
 [parametro]
 
 [fiche-xml]
-/home/Ubuntu-Toni/programar/dsenviosaltra/certificado_sepe.xml
+/home/Ubuntu-Toni/programar/dsenviosaltra/certificado_sepe1.xml
 
 [fiche-out]
 /tmp/ase2111/apisbase/lanza/037000/param_0201.txt
@@ -17,7 +17,7 @@ POST
         "certificado": "aea1b708f879276ca5628d55e0b6cdd5af13fd1a                    ",
         "datos":
         {
-                "validar_sin_enviar": "true",
+                "validar_sin_enviar": "false",
                 "#xmltojson#":"null"
         }
 }

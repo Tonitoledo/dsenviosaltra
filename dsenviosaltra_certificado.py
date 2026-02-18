@@ -2,7 +2,6 @@
 import json
 import base64
 import requests
-import sys
 from typing import Dict, Any
 from dsenviosaltra_respuestas import guardar_respuesta_completa, manejar_error_y_salir
 

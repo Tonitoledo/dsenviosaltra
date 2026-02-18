@@ -5,7 +5,6 @@ Uso: python conectass_client.py archivo.xml [config.ini]
 """
 import json
 import requests
-import sys
 from typing import Dict, Any
 from dsenviosaltra_respuestas import guardar_respuesta_completa, manejar_error_y_salir
 

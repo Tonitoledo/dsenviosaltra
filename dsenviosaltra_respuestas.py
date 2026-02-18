@@ -167,11 +167,11 @@ def guardar_respuestas_contratos(respuestas_contratos: List[Dict], fich_respuest
                     texto_salida += f"""
         Pdf1 {ruta_pdf1}"""
                 
-                if "file2" in data:
-                    ruta_pdf2 = _procesar_pdf_contrato(data, base_path, numero_contrato, "file2", 2)
-                    if ruta_pdf2:
-                        texto_salida += f"""
-        Pdf2 {ruta_pdf2}"""
+    #            if "file2" in data:
+    #                ruta_pdf2 = _procesar_pdf_contrato(data, base_path, numero_contrato, "file2", 2)
+    #                if ruta_pdf2:
+    #                    texto_salida += f"""
+    #    Pdf2 {ruta_pdf2}"""
                         
                 texto_salida += """
       FinRegistro
@@ -523,6 +523,15 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
             {clave} : {valor}"""
                     employees += 1
             
+            # tiene clave 'details'
+            elif "details" in data and isinstance(data["details"], list):
+                for item in data["details"]:
+                    texto_salida_cuerpo += f"""
+          Tabla"""
+                    for clave, valor in item.items():
+                        texto_salida_cuerpo += f"""
+            {clave} : {valor}"""
+
             # acciones específicas (018, 019, 021)
             elif parametro in ["018", "019", "021"]:
                 texto_salida_cuerpo += f"""
@@ -553,7 +562,19 @@ def json_to_txt(json_data, txt_path: str=None, response_status=None, config: Dic
                     else:
                         texto_salida_cuerpo += f"""
                 categoriaProfesional : Ninguna"""
-            
+            elif endpoint.endswith("/enterprise-data"):
+                texto_salida_cuerpo += f"""
+          Mensaje {data.get("id")}"""
+                for registro, valor in data.items():
+                    if registro == "domicilio":
+                        for clave, valor in data.get("domicilio").items():
+                            texto_salida_cuerpo += f"""
+                {clave} : {valor}"""
+                    else:
+                        texto_salida_cuerpo += f"""
+                {registro} : {valor}"""
+                employees += 1
+
             # data es un diccionario simple
             else:
                 texto_salida_cuerpo += f"""

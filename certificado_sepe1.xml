@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Certificado_empresa xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Cuenta_cotizacion>
+<Datos_Representante>
+<CIF_NIF>27459573B</CIF_NIF>
+<Nombre>JUAN ANGEL</Nombre>
+<Apellido1>HERNANDEZ</Apellido1>
+<Apellido2>GARCIA</Apellido2>
+<Cargo>REP. LEGAL</Cargo>
+</Datos_Representante>
+<Datos_Empresa>
+<CIF_NIF>B45532132</CIF_NIF>
+<CCC>011146138348373</CCC>
+</Datos_Empresa>
+<Datos_Trabajador>
+<DNI_NIE>49469001A</DNI_NIE>
+<Nombre>JORGE</Nombre>
+<Apellido1>NAVIO</Apellido1>
+<Apellido2>MARTINEZ</Apellido2>
+<NumSS>461159399917</NumSS>
+<GrupoCotizacion>02</GrupoCotizacion>
+<TipoContrato>502</TipoContrato>
+<DuracionContrato>00012</DuracionContrato>
+<IndicadorDuracionContrato>D</IndicadorDuracionContrato>
+<CodProfesion>2121000</CodProfesion>
+<FechaAltaEmpresa>20260202</FechaAltaEmpresa>
+<CodCausaSuspension>11</CodCausaSuspension>
+<FechaSuspensionExtincion>20260213</FechaSuspensionExtincion>
+<DiasSalarioTramitacion>00000</DiasSalarioTramitacion>
+<DistribucionJornadas>
+<Periodo>
+<TipoDistribucion>2</TipoDistribucion>
+<FechaInicioPeriodo>20260202</FechaInicioPeriodo>
+<FechaFinPeriodo>20260213</FechaFinPeriodo>
+<NumeroDiasTrabajadosPorSemanaOPeriodo>00008</NumeroDiasTrabajadosPorSemanaOPeriodo>
+</Periodo>
+</DistribucionJornadas>
+<Datos_Cotizacion>
+<Ano>2026</Ano>
+<Mes>02</Mes>
+<NumDiasCotizados>012</NumDiasCotizados>
+<BaseCotizacionDesempleo>000057092</BaseCotizacionDesempleo>
+</Datos_Cotizacion>
+</Datos_Trabajador>
+</Cuenta_cotizacion>
+</Certificado_empresa>

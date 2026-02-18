@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Certificado_empresa xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <Cuenta_cotizacion>
+<Datos_Representante>
+<CIF_NIF>27459573B</CIF_NIF>
+<Nombre>JUAN ANGEL</Nombre>
+<Apellido1>HERNANDEZ</Apellido1>
+<Apellido2>GARCIA</Apellido2>
+<Cargo>REP. LEGAL</Cargo>
+</Datos_Representante>
+<Datos_Empresa>
+<CIF_NIF>B45532132</CIF_NIF>
+<CCC>011103130280734</CCC>
+</Datos_Empresa>
+<Datos_Trabajador>
+<DNI_NIE>54641986N</DNI_NIE>
+<Nombre>IBTISSAM</Nombre>
+<Apellido1>EL MOUTTAQI</Apellido1>
+<Apellido2>MOUKHLIS</Apellido2>
+<NumSS>031082226827</NumSS>
+<GrupoCotizacion>02</GrupoCotizacion>
+<TipoContrato>200</TipoContrato>
+<DuracionContrato>00010</DuracionContrato>
+<IndicadorDuracionContrato>D</IndicadorDuracionContrato>
+<CodProfesion>2121000</CodProfesion>
+<FechaAltaEmpresa>20260204</FechaAltaEmpresa>
+<CodCausaSuspension>21</CodCausaSuspension>
+<FechaSuspensionExtincion>20260213</FechaSuspensionExtincion>
+<DiasSalarioTramitacion>00000</DiasSalarioTramitacion>
+<DistribucionJornadas>
+<Periodo>
+<TipoDistribucion>1</TipoDistribucion>
+<FechaInicioPeriodo>20260204</FechaInicioPeriodo>
+<FechaFinPeriodo>20260213</FechaFinPeriodo>
+<NumeroDiasTrabajadosPorSemanaOPeriodo>00001</NumeroDiasTrabajadosPorSemanaOPeriodo>
+</Periodo>
+</DistribucionJornadas>
+<Datos_Cotizacion>
+<Ano>2026</Ano>
+<Mes>02</Mes>
+<NumDiasCotizados>010</NumDiasCotizados>
+<BaseCotizacionDesempleo>000031189</BaseCotizacionDesempleo>
+</Datos_Cotizacion>
+</Datos_Trabajador>
+</Cuenta_cotizacion>
+</Certificado_empresa>

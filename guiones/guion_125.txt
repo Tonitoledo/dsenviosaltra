@@ -1,0 +1,17 @@
+[url]
+https://api.saltra.es/api/v4/sepe/authorization-management/enterprise-data
+[metodo]
+GET
+[parametro]
+
+[fiche-out]
+/tmp/ase2111/apisbase/lanza/037000/param_0125.txt
+[json envio]
+{
+        "certificado": "91dde74b184b34ab6cc5098fa570c3d9a649385f                    ",
+        "datos":
+        {
+                "validar_sin_enviar": "true",
+                "cif":"B19912999"
+        }
+}

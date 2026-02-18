@@ -1,5 +1,5 @@
 [url]
-https://api.saltra.es/api/v4/sepe/contrata
+https://api.saltra.es/api/v4/sepe/transformation
 
 [metodo]
 POST
@@ -7,10 +7,10 @@ POST
 [parametro]
 
 [fiche-xml]
-/home/Ubuntu-Toni/programar/dsenviosaltra/CONTR402.xml
+/home/Ubuntu-Toni/programar/dsenviosaltra/transformacion.xml
 
 [fiche-out]
-/tmp/ase2111/apisbase/lanza/037001/param_0101.txt
+/tmp/ase2111/apisbase/lanza/037001/param_0103.txt
 
 [json envio]
 {

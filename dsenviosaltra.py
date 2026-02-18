@@ -24,7 +24,8 @@ class SaltraClient:
     # Constantes para códigos de contrato
     CONTRATOS_REAL_DECRETO = [402, 407, 502, 507]
     CONTRATOS_HORAS_FORMACION = [421, 521]
-    TIEMPO_PARCIAL = [200, 209, 230, 239, 250, 289, 500, 502, 503, 506, 507, 508, 510, 511, 513, 518, 520, 521, 520, 540, 541, 550, 552]
+    TIEMPO_PARCIAL = [200, 209, 230, 239, 250, 289, 300, 389, 500, 502, 503, 506, 507, 508, 510, 511, 513, 518, 520, 521, 520, 540, 541, 550, 552]
+    CODIGO_TRANSFORMACION = [109, 189, 209, 309, 289, 289, 139, 239, 339]
     COND_DESEMPLEADO_VALIDOS = ("1", "2", "3", "4", "5", "6", "7", "9")
     
     def __init__(self, dsClave: str, usuario: str, idUsuario:str, passw: str, guion_file: str, code_respuesta: str, tiempo_inicio):
@@ -306,7 +307,7 @@ class SaltraClient:
                         self.metodo,
                         self.tiempo_inicio
                     )
-            elif self.endpoint.rstrip('/').endswith('/llamamientos') or self.endpoint.rstrip('/').endswith('/prorroga') or self.endpoint.rstrip('/').endswith('/certifica') or self.endpoint.rstrip('/').endswith('/contrata/data'):
+            elif self.endpoint.rstrip('/').endswith('/llamamientos') or self.endpoint.rstrip('/').endswith('/prorroga') or self.endpoint.rstrip('/').endswith('/certifica') or self.endpoint.rstrip('/').endswith('/transformation') or self.endpoint.rstrip('/').endswith('/contrata/data'):
                 test = datos_originales.get('test')
                 if "json_data" in datos_originales:
                     json_string = datos_originales["json_data"]
@@ -407,10 +408,13 @@ class SaltraClient:
             tree = ET.parse(path_xml)
             root = tree.getroot()
             payload_api = {}
+
             esContrato = False
             esLlamamiento = False
             esProrroga = False
+            esTransformacion = False
             esCertificado = False
+            
             if root.tag == "CONTRATOS":
                 esContrato = True
 
@@ -419,6 +423,9 @@ class SaltraClient:
 
             if root.tag == "PRORROGAS":
                 esProrroga = True
+
+            if root.tag == "TRANSFORMACIONES":
+                esTransformacion = True
 
             if root.tag == "Certificado_empresa":
                 esCertificado = True
@@ -493,7 +500,7 @@ class SaltraClient:
 
                     if cod_contrato in self.TIEMPO_PARCIAL:
                         tipo_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/TIPO_JORNADA')
-                        horas_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_JORNADA')
+                        horas_jornada = self.obtener_texto_nodo(contrato_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_JORNADA', "0")
                         minutos_jornada = 0
 
                     payload_api = {
@@ -547,9 +554,9 @@ class SaltraClient:
                         payload_api["endDate"] = fecha_fin
 
                     if cod_contrato in self.TIEMPO_PARCIAL:
-                        payload_api["jornadaType"] = tipo_jornada[2:]
-                        payload_api["jornadaHour"] = horas_jornada[2:]
-                        payload_api["jornadaMin"] = minutos_jornada
+                        payload_api["jornadaType"] = tipo_jornada
+                        payload_api["jornadaHour"] = horas_jornada[:4]
+                        payload_api["jornadaMin"] = horas_jornada[4:]
                     
                     json_dict.append(payload_api)
 
@@ -650,6 +657,63 @@ class SaltraClient:
                     ]
                 }
                 return json.dumps(payload_api)
+            
+            elif esTransformacion:
+                contratoTiempoParcial = False
+                for transformacion_node in root:
+                    cod_contrato = int(transformacion_node.tag.split('_')[1])
+
+                    cif_empresa = self.obtener_texto_nodo(transformacion_node, 'DATOS_EMPRESA/CIF_NIF_EMPRESA/CIF_NIF')
+                    ccc_completo = self.obtener_texto_nodo(transformacion_node, 'DATOS_EMPRESA/CODIGO_CUENTA_COTIZACION')
+
+                    identificador = self.obtener_texto_nodo(transformacion_node, 'DATOS_CONTRATO/IDENTIFICADORPFISICA')
+                    fecha_inicio_cto = self._formatear_fecha(self.obtener_texto_nodo(transformacion_node, 'DATOS_CONTRATO/FECHA_INICIO_CTO'))
+                    clave_contrato = self.obtener_texto_nodo(transformacion_node, 'DATOS_CONTRATO/CLAVE_CONTRATO', '')
+                    clave_contrato = self.tratar_sepeId(clave_contrato)
+
+                    fecha_inicio_transformacion = self._formatear_fecha(self.obtener_texto_nodo(transformacion_node, 'DATOS_GENERALES_TRANSFORMACION/FECHA_INICIO'))
+                    codigo_ocupacion = self.obtener_texto_nodo(transformacion_node, 'DATOS_GENERALES_TRANSFORMACION/CODIGO_OCUPACION')
+                    nacionalidad_contrato = self.obtener_texto_nodo(transformacion_node, 'DATOS_GENERALES_TRANSFORMACION/NACIONALIDAD_CT', '0')
+                    municipio_contrato = self.obtener_texto_nodo(transformacion_node, 'DATOS_GENERALES_TRANSFORMACION/MUNICIPIO_CT', '0')
+                    
+                    tipo_firma = self.obtener_texto_nodo(transformacion_node, 'DATOS_COMUNICA_COPIA_BASICA/TIPO_FIRMA')
+                    texto_copia_basica = self.obtener_texto_nodo(transformacion_node, 'DATOS_COMUNICA_COPIA_BASICA/TEXTO_COPIABASICA', "Vacio")
+                    domicilio_centro_trabajo = self.obtener_texto_nodo(transformacion_node, 'DATOS_COMUNICA_COPIA_BASICA/DOMIC_CENTRO_TRABAJO', "") 
+
+                    if "DATOS_CONTRATO_TIEMPO_PARCIAL" in [child.tag for child in transformacion_node]:
+                        tipo_jornada = self.obtener_texto_nodo(transformacion_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/TIPO_JORNADA')
+                        horas_jornada = int(self.obtener_texto_nodo(transformacion_node, 'DATOS_CONTRATO_TIEMPO_PARCIAL/HORAS_JORNADA', 0))
+                        contratoTiempoParcial = True
+
+                    payload_api = {
+                        "TIPO_CONTRATO": cod_contrato,
+                        "DATOS_EMPRESA": {
+                            "CODIGO_CUENTA_COTIZACION": ccc_completo
+                        },
+                        "DATOS_CONTRATO": {
+                            "IDENTIFICADORPFISICA": identificador,
+                            "FECHA_INICIO_CTO": fecha_inicio_cto,
+                            "CLAVE_CONTRATO": clave_contrato
+                        },
+                        "DATOS_GENERALES_TRANSFORMACION": {
+                            "FECHA_INICIO": fecha_inicio_transformacion,
+                            "CODIGO_OCUPACION": codigo_ocupacion
+                        },
+                        "DATOS_COMUNICA_COPIA_BASICA": {
+                            "TIPO_FIRMA": tipo_firma,
+                            "TEXTO_COPIABASICA": texto_copia_basica,
+                            "DOMIC_CENTRO_TRABAJO": domicilio_centro_trabajo
+                        },
+                        "duplicate": 1
+                    }
+
+                    if contratoTiempoParcial:
+                        payload_api["DATOS_CONTRATO_TIEMPO_PARCIAL"] = {
+                            "TIPO_JORNADA": tipo_jornada,
+                            "HORAS_JORNADA": horas_jornada
+                        }
+
+                return json.dumps(payload_api)
             elif esCertificado:
                 cerificado_node = root.find("Cuenta_cotizacion")
 
@@ -690,7 +754,7 @@ class SaltraClient:
                         "TipoContrato": self.obtener_texto_nodo(trabajador_node, 'TipoContrato'),
                         "DuracionContrato": self.obtener_texto_nodo(trabajador_node, 'DuracionContrato'),
                         "IndicadorDuracionContrato": self.obtener_texto_nodo(trabajador_node, 'IndicadorDuracionContrato'),
-                        "CodProfesion": self.obtener_texto_nodo(trabajador_node, 'CodProfesion'),
+                        "CodProfesion": self.obtener_texto_nodo(trabajador_node, 'CodProfesion')[:4],
                         "FechaAltaEmpresa": self._formatear_fecha(self.obtener_texto_nodo(trabajador_node, 'FechaAltaEmpresa')),
                         "CodCausaSuspension": self.obtener_texto_nodo(trabajador_node, 'CodCausaSuspension'),
                         "FechaSuspensionExtincion": self._formatear_fecha(self.obtener_texto_nodo(trabajador_node, 'FechaSuspensionExtincion')),
